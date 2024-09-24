@@ -9,7 +9,7 @@ class Event extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-         'name', 'description', 'image', 'village_id', 'event_category_id', 'event_date', 'event_time', 'event_duration', 'event_agenda', 'expected_attendance', 'resoure_list', 'status', 'event_status','attendees_id'
+         'name', 'description', 'image', 'village_id', 'event_category_id', 'event_date', 'event_time', 'event_duration', 'event_agenda', 'expected_attendance', 'resoure_list', 'status', 'event_status','attendees_id','uploaded_photos', 'uploaded_videos', 'uploaded_audios'
     ];
 
 
@@ -24,7 +24,113 @@ class Event extends Model
         return $defaultImage;
     }
 
-      public function event_category_info(){
+    // public function getUploadedPhotosAttribute() {
+    //     // If the uploaded_photos attribute exists in the database, return its full path
+    //     if (!empty($this->attributes['uploaded_photos'])) {
+    //         return url('uploads/event/photos/' . $this->attributes['uploaded_photos']);
+    //     }
+
+    //     // Return the default image path if no image is set
+    //     return url('uploads/default/default.jpg');
+    // }
+    public function getUploadedPhotosAttribute()
+    {
+        if (!empty($this->attributes['uploaded_photos'])) {
+            // Split the uploaded_photos string into an array
+            $photos = explode(',', $this->attributes['uploaded_photos']);
+            // Return the full URLs for the first three images
+            return array_map(function ($photo) {
+                return url('uploads/event/photos/' . trim($photo));
+            }, array_slice($photos, 0, 3));
+        }
+
+        return [];
+
+    }
+
+    public function getUploadedVideosAttribute()
+    {
+        if (!empty($this->attributes['uploaded_videos'])) {
+            // Split the uploaded_videos string into an array
+            $videos = explode(',', $this->attributes['uploaded_videos']);
+            // Return the full URLs for the first three videos
+            return array_map(function ($video) {
+                return url('uploads/event/videos/' . trim($video));
+            }, array_slice($videos, 0, 3));
+        }
+
+        // Return an empty array if no videos are set
+        return [];
+    }
+
+    public function getUploadedAudiosAttribute()
+    {
+        if (!empty($this->attributes['uploaded_audios'])) {
+            // Split the uploaded_audios string into an array
+            $audios = explode(',', $this->attributes['uploaded_audios']);
+            // Return the full URLs for the first three audios
+            return array_map(function ($audio) {
+                return url('uploads/event/audios/' . trim($audio));
+            }, array_slice($audios, 0, 3));
+        }
+
+        // Return an empty array if no audios are set
+        return [];
+    }
+
+    public function event_category_info(){
         return $this->belongsTo(EventCategory::class,'event_category_id','id');
+    }
+    public function village_info(){
+        return $this->belongsTo(Village::class,'village_id','id');
+    }
+    public function attendee_info(){
+        return $this->belongsTo(Attendees::class,'attendees_id','id');
+    }
+
+
+
+
+    public function getUploadedPhotos()
+    {
+        if (!empty($this->attributes['uploaded_photos'])) {
+            // Split the uploaded_photos string into an array
+            $photos = explode(',', $this->attributes['uploaded_photos']);
+            // Return the full URLs for the first three photos
+            return array_map(function ($photo) {
+                return url('uploads/event/photos/' . trim($photo));
+            }, $photos);
+        }
+
+        // Return an empty array if no videos are set
+        return [];
+    }
+    public function getUploadedVidios()
+    {
+        if (!empty($this->attributes['uploaded_videos'])) {
+            // Split the uploaded_videos string into an array
+            $videos = explode(',', $this->attributes['uploaded_videos']);
+            // Return the full URLs for the first three videos
+            return array_map(function ($video) {
+                return url('uploads/event/videos/' . trim($video));
+            }, $videos);
+        }
+
+        // Return an empty array if no videos are set
+        return [];
+    }
+    public function getUploadedAudios()
+    {
+        if (!empty($this->attributes['uploaded_audios'])) {
+            // Split the uploaded_audios string into an array
+            $audios = explode(',', $this->attributes['uploaded_audios']);
+            // Return the full URLs for the first three audios
+            return array_map(function ($audio) {
+                return url('uploads/event/audios/' . trim($audio));
+            }, $audios);
+        }
+
+        // Return an empty array if no videos are set
+        return [];
     }
 }

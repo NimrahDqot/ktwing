@@ -1030,9 +1030,10 @@ Route::post('admin/event/update/{id}', [EventController::class,'update'])
 
 Route::get('admin/event-status/{id}', [EventController::class,'change_status']);
 
-Route::post('admin/submit-volunteer', [EventController::class, 'submit_volunteer']);
+Route::post('admin/assign-volunteer', [EventController::class, 'assign_volunteer']);
+Route::post('admin/assign-attendee', [EventController::class, 'assign_attendee']);
 
-Route::post('/admin/attendees/store', [EventController::class, 'storeAttendee'])->name('admin_attendees_store');
+Route::post('/admin/attendees', [EventController::class, 'storeAttendee'])->name('admin_attendees_store');
 
 
 /* --------------------------------------- */

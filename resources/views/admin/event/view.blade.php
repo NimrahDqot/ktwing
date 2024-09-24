@@ -24,8 +24,9 @@
                         <th>Category Name</th>
                         <th>Event Details</th>
                         <th>Status</th>
-                        <th>Volunteers Name</th>
                         <th>Assign to volunteer</th>
+                        <th>Assign to Attendee</th>
+
                         <th>{{ ACTION }}</th>
                     </tr>
                     </thead>
@@ -44,12 +45,21 @@
                             <td>
                                 <b>Name: </b>{{ Str::ucfirst($row->name) }} <br>
                                 <b>Date: </b>{{ date('d M, Y', strtotime($row->event_date)) }}, {{ date('g:i A', strtotime($row->event_time)) }}
+                               <br>
+                               @if($row->event_status == 'Ongoing')
+                                    <span class="badge badge-pill badge-primary mt-2">{{ $row->event_status }}</span>
+                                @elseif($row->event_status == 'Completed')
+                                    <span class="badge badge-pill badge-success mt-2">{{ $row->event_status }}</span>
+                                @elseif($row->event_status == 'Upcoming')
+                                    <span class="badge badge-pill badge-warning mt-2">{{ $row->event_status }}</span>
+                                @endif
+
                             </td>
                             <td>
                                 @if ($row->status == '1')
-                                <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" checked data-toggle="toggle" data-on="Active" data-off="Pending" data-onstyle="success" data-offstyle="danger"></a>
+                                <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" checked data-toggle="toggle" data-on="Active" data-off="InActive" data-onstyle="success" data-offstyle="danger"></a>
                                 @else
-                                    <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" data-toggle="toggle" data-on="Active" data-off="Pending" data-onstyle="success" data-offstyle="danger"></a>
+                                    <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" data-toggle="toggle" data-on="Active" data-off="InActive" data-onstyle="success" data-offstyle="danger"></a>
                                 @endif
                             </td>
 
@@ -63,17 +73,37 @@
                                         <span>{{ $volunteer->name }}</span>{{ !$loop->last ? ', ' : '' }}
                                     @endforeach
                                 @else
-                                    <span>No volunteers assigned</span>
+                                    <span class="text-secondary">No volunteers assigned</span>
                                 @endif
-                            </td>
+                                <p class="pt-2">
 
-                            <!-- Assign Volunteer Button -->
-                            <td>
-                                <button class="btn btn-warning" onclick="openModal({{ $row->id }}, {{ json_encode($volunteerIds) }})">Assign to volunteer</button>
+                                    <button class="btn btn-warning" onclick="openModal({{ $row->id }}, {{ json_encode($volunteerIds) }})">Assign to volunteer</button>
+                                </p>
                             </td>
                             <td>
-                                <a href="{{ route('admin_event_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                <a href="{{ route('admin_event_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                                @php
+                                    $attendeeIds = explode(',', $row->attendees_id); // Assuming the IDs are stored as CSV
+                                    $assignedAttendee = $attendees->whereIn('id', $attendeeIds); // Fetch volunteer names based on IDs
+                                @endphp
+                                @if($assignedAttendee->count() > 0)
+                                    @foreach($assignedAttendee as $attendee)
+                                        <span>{{ $attendee->name }}</span>{{ !$loop->last ? ', ' : '' }}
+                                    @endforeach
+                                @else
+                                    <span class="text-secondary">No attendee assigned</span>
+                                @endif
+                                <p class="pt-2">
+                                    <button class="btn btn-info" onclick="openAttendeeModal({{ $row->id }}, {{ json_encode($attendeeIds) }})">Assign to attendee</button>
+                                </p>
+                            </td>
+                            <td>
+                                @if($row->event_status == 'Completed')
+                                <a href="{{ route('admin_event_view',$row->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
+
+                                @else
+                                    <a href="{{ route('admin_event_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                                    <a href="{{ route('admin_event_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                                @endif
                             </td>
 
                         </tr>
@@ -94,7 +124,7 @@
                             <div class="modal-body">
                                 <form id="assignVolunteerForm">
                                     <select name="volunteer_id[]" id="volunteerSelect" data-placeholder="-Select Volunteer-" multiple class="chosen-select" style="width:100%">
-                                        <option value="" disabled>-Select Volunteer-</option>
+                                        <option  disabled>-Select Volunteer-</option>
                                         @foreach($volunteers as $volunteer)
                                             <option value="{{ $volunteer->id }}">{{ $volunteer->name }}</option>
                                         @endforeach
@@ -103,7 +133,39 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="submitVolunteer()" data-dismiss="modal">Submit</button>
+                                <button type="button" class="btn btn-primary" onclick="submitVolunteer()" >Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Assign Attendee Modal -->
+                 <div class="modal fade" id="assignattendeeModal" tabindex="-1" aria-labelledby="assignattendeeLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="assignattendeeLabel">Assign attendee</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <button type="button" class="btn btn-info float-right mb-2" data-toggle="modal" data-target="#attendeeModal">
+                                    + Add Attendee
+                                </button>
+                                <form id="assignattendeeForm">
+                                    <select name="attendee_id[]" id="attendeeSelect" data-placeholder="-Select attendee-" multiple class="chosen-select" style="width:100%">
+                                        <option  disabled>-Select attendee-</option>
+                                        @foreach($attendees as $attendee)
+                                            <option value="{{ $attendee->id }}">{{ $attendee->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="submitAttendee()" >Submit</button>
                             </div>
                         </div>
                     </div>
@@ -113,7 +175,40 @@
         </div>
     </div>
     <!-- Modal -->
-
+    <!--Add new attendees Modal -->
+    <div class="modal fade" id="attendeeModal" tabindex="-1" role="dialog" aria-labelledby="attendeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attendeeModalLabel">Add New Attendee</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="attendeeForm">
+                        @csrf
+                        <div class="form-group">
+                            <label for="new_attendee_name">Name</label>
+                            <input type="text" id="new_attendee_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_attendee_role">Role</label>
+                            <input type="text" id="new_attendee_role" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_attendee_image">Image</label>
+                            <input type="file" id="new_attendee_image" accept="image/*" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="add_attendee" class="btn btn-primary" onclick="addAttendee()">Add Attendee</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 
@@ -121,7 +216,7 @@
 <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
 <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 
-<script>
+<script type="text/javascript">
 
     $(document).ready(function() {
         $(".chosen-select").chosen({
@@ -160,15 +255,32 @@
         modalInstance.show();
     }
 
+    function openAttendeeModal(rowId, selectedAttendee) {
+        console.log(rowId, selectedAttendee);
+        const modal = document.getElementById('assignattendeeModal');
+        modal.dataset.rowId = rowId;
+
+        // Clear previous selections
+        $('#attendeeSelect').val([]).trigger('chosen:updated');
+
+        if (selectedAttendee && selectedAttendee.length > 0) {
+            $('#attendeeSelect').val(selectedAttendee).trigger('chosen:updated');
+        }
+
+        // Show the modal
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
 function submitVolunteer() {
     // Get the selected volunteers from the form
     var selectedVolunteers = $('#volunteerSelect').val();
     var modal = document.getElementById('assignVolunteerModal');
     var rowId = modal.dataset.rowId;
-
-    if (selectedVolunteers.length > 0) {
+        console.log(selectedVolunteers);
+    if (selectedVolunteers && selectedVolunteers.length > 0) {
         $.ajax({
-            url:"{{url('/admin/submit-volunteer')}}",
+            url:"{{url('/admin/assign-volunteer')}}",
             method: 'POST',
             data: {
                 id: rowId,
@@ -177,56 +289,114 @@ function submitVolunteer() {
             },
             success: function(response) {
                 toastr.success('Volunteers assigned successfully');
-                // $(this).modal('hide');
-                // $('.modal').each(function(){
-                //     $(this).modal('hide');
-                // });
-                   $('#assignVolunteerModal').modal('hide');
-                   alert('h');
-                // location.reload(); // Reload the page or handle dynamically
+
+                // Update the specific <td> with the new volunteer names
+                var updatedVolunteersHtml = '';
+                    // if (response.assignedVolunteers.length > 0) {
+                    //     response.assignedVolunteers.forEach(function(volunteer, index) {
+                    //         updatedVolunteersHtml += volunteer.name;
+                    //         if (index < response.assignedVolunteers.length ) {
+                    //             updatedVolunteersHtml += ', ';
+                    //         }
+                    //     });
+                    // } else {
+                    //     updatedVolunteersHtml = '<span class="text-secondary">No volunteers assigned</span>';
+                    // }
+
+                    // // Update the <td> with class 'updateOnrefresh'
+                    // $('td.updateOnrefresh[data-row-id="' + rowId + '"]').html(updatedVolunteersHtml);
+
+
+                    // $("#assignVolunteerModal").removeClass("show").attr("aria-hidden", "true").css("display", "none");
+
+                    // // Optionally, remove the modal backdrop if it's still visible
+                    // $(".modal-backdrop").remove();
+                //    $('#assignVolunteerModal').modal('hide');
+                //    alert('h');
+                location.reload(); // Reload the page or handle dynamically
             },
             error: function(error) {
                 toastr.error('Error occurred while assigning volunteers');
             }
         });
 
-        // Close the modal after submission
-        const modalInstance = bootstrap.Modal.getInstance(modal);
-        modalInstance.hide();
     } else {
-        alert("Please select at least one volunteer.");
+        toastr.warning('Please select at least one volunteer');
+
+        //   toastr.warning('Please select at least one volunteer');
     }
 }
 
 
-// function toggleAssignVolunteer(id) {
-//     const rejectionDiv = document.getElementById(`rejection_div_${id}`);
-//     rejectionDiv.style.display = rejectionDiv.style.display === 'none' ? 'block' : 'none';
-// }
+function submitAttendee() {
+    // Get the selected volunteers from the form
+    var selectedAttendee = $('#attendeeSelect').val();
+    var modal = document.getElementById('assignattendeeModal');
+    var rowId = modal.dataset.rowId;
+        console.log(selectedAttendee);
+    if (selectedAttendee && selectedAttendee.length > 0) {
+        $.ajax({
+            url:"{{url('/admin/assign-attendee')}}",
+            method: 'POST',
+            data: {
+                id: rowId,
+                attendees_id: selectedAttendee,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                toastr.success('Attendee assigned successfully');
+                location.reload();
+            },
+            error: function(error) {
+                toastr.error('Error occurred while assigning attendees');
+            }
+        });
 
-// function submitRejection(id) {
-//     const rejectionReason = document.getElementById(`rejection_reason_${id}`).value;
+    } else {
+        toastr.warning('Please select at least one attendee');
 
-//     if (rejectionReason.trim() === '') {
-//         toastr.error('Please enter a rejection reason');
-//         return;
-//     }
+    }
+}
+</script>
 
-    $.ajax({
-        url: '/submit-volunteer', // Your route here
-        method: 'POST',
-        data: {
-            id: id,
-            volunteer: volunteer_id,
-            _token: '{{ csrf_token() }}'
-        },
-        success: function(response) {
-            toastr.success('Rejection reason submitted successfully');
-            location.reload(); // Reload page or handle rejection dynamically
-        },
-        error: function(error) {
-            toastr.error('Error occurred while submitting rejection reason');
-        }
-    });
-// }
+<script>
+    // Function to handle adding an attendee
+    function addAttendee() {
+        const name = document.getElementById('new_attendee_name').value;
+        const role = document.getElementById('new_attendee_role').value;
+        const image = document.getElementById('new_attendee_image').files[0];
+
+        // Assuming you have an API endpoint to add the attendee
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('role', role);
+        formData.append('image', image);
+        formData.append('_token', '{{ csrf_token() }}'); // Include CSRF token
+
+         // Use jQuery AJAX to submit the form data
+        $.ajax({
+            url: "{{ url('/admin/attendees') }}", // Update with your endpoint
+            method: 'POST',
+            processData: false, // Prevent jQuery from automatically transforming the data into a query string
+            contentType: false, // Let the browser set the content type
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    // Update the attendee select options here
+                    $('#attendeeSelect').append(new Option(response.attendee.name, response.attendee.id));
+                    // Clear the input fields
+                    document.getElementById('attendeeForm').reset();
+                    // Close the modal
+                    $('#attendeeModal').modal('hide');
+                    toastr.success('Attendee added successfully');
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(error) {
+                console.error('Error:', error);
+                toastr.error('Error occurred while adding attendee');
+            }
+        });
+    }
 </script>

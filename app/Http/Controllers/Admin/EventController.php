@@ -150,22 +150,55 @@ class EventController extends Controller
         }
         return response()->json($message);
     }
-    public function submit_volunteer(Request $request) {
+    // public function submit_volunteer(Request $request) {
 
+    //     $request->validate([
+    //         'id' => 'required|exists:events,id', // Validate that the ID exists
+    //         'volunteer_id' => 'required|array', // Ensure volunteer IDs are sent as an array
+    //     ]);
+    //     $id = $request->id;
+    //     $volunteer_id = $request->volunteer_id;
+    //     $event = Event::find($id);;
+    //     if (!$volunteer_id) {
+    //         return response()->json(['error' => 'Record not found.'], 404);
+    //     }
+    //     $event->volunteer_id = implode(',', $volunteer_id); // Store as comma-separated values (if required)
+    //     $event->save();
+
+    //     return response()->json(['success' => true,
+    //     'message' => 'Volunteers assigned successfully.',
+    //     'assignedVolunteers' => $assignedVolunteers]);
+    // }
+    public function assign_volunteer(Request $request) {
+
+        // Validate incoming request
         $request->validate([
             'id' => 'required|exists:events,id', // Validate that the ID exists
             'volunteer_id' => 'required|array', // Ensure volunteer IDs are sent as an array
         ]);
+
         $id = $request->id;
         $volunteer_id = $request->volunteer_id;
-        $event = Event::find($id);;
+
+        // Find the event
+        $event = Event::find($id);
+
         if (!$volunteer_id) {
             return response()->json(['error' => 'Record not found.'], 404);
         }
-        $event->volunteer_id = implode(',', $volunteer_id); // Store as comma-separated values (if required)
+
+        // Save volunteer IDs as comma-separated values
+        $event->volunteer_id = implode(',', $volunteer_id);
         $event->save();
 
-        return response()->json(['success' => true, 'message' => 'Volunteers assigned successfully.']);
+        // Fetch the assigned volunteers after saving
+        $assignedVolunteers = Volunteer::whereIn('id', $volunteer_id)->get(); // Assuming you have a Volunteer model
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Volunteers assigned successfully.',
+            'assignedVolunteers' => $assignedVolunteers // Send the assigned volunteers in the response
+        ]);
     }
 
     public function storeAttendee(Request $request)
@@ -202,5 +235,34 @@ class EventController extends Controller
             ],
         ]);
 
+    }
+
+    public function assign_attendee(Request $request) {
+
+        // Validate incoming request
+        $request->validate([
+            'id' => 'required|exists:events,id', // Validate that the ID exists
+            'attendees_id' => 'required|array', // Ensure volunteer IDs are sent as an array
+        ]);
+
+        $id = $request->id;
+        $attendees_id = $request->attendees_id;
+
+        // Find the event
+        $event = Event::find($id);
+
+        if (!$attendees_id) {
+            return response()->json(['error' => 'Record not found.'], 404);
+        }
+
+        // Save volunteer IDs as comma-separated values
+        $event->attendees_id = implode(',', $attendees_id);
+        $event->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendees assigned successfully.',
+
+        ]);
     }
 }

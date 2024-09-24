@@ -21,9 +21,9 @@ class Volunteer extends Model
     public function Role(){
         return  $this->belongsTo(Role::class,'role_id')->select('name');
     }
-    protected $hidden = [
-    'password',
-    ];
+    // protected $hidden = [
+    // 'password',
+    // ];
 
     public function getImageAttribute() {
         // If the image attribute exists in the database, return its full path

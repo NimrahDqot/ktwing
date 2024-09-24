@@ -24,6 +24,9 @@ Route::group(['prefix' => 'volunteer'], function () {
     Route::get('banner', [AuthController::class, 'banner']);
     Route::post('notification', [AuthController::class, 'notification']);
     Route::post('visitor-form', [AuthController::class, 'store_visitor']);
-    Route::post('visitor-list', [AuthController::class, 'store_visitor']);
+    Route::post('all-event', [AuthController::class, 'all_events']);
+    Route::post('event-detail', [AuthController::class, 'event_detail']);
+    Route::post('create-event-request', [AuthController::class, 'create_event_request']);
+    Route::post('event-medias', [AuthController::class, 'event_medias']);
 });
 

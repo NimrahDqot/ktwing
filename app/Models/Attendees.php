@@ -13,5 +13,14 @@ class Attendees extends Model
         'role',
         'image'
     ];
+    public function getImageAttribute() {
+        // If the image attribute exists in the database, return its full path
+        if (!empty($this->attributes['image'])) {
+            return url('uploads/attendees/' . $this->attributes['image']);
+        }
 
+        // Return the default image path if no image is set
+        $defaultImage = url('uploads/default/default.jpg');
+        return $defaultImage;
+    }
 }

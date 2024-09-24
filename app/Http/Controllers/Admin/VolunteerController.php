@@ -1,0 +1,172 @@
+<?php
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
+use App\Models\Volunteer;
+use App\Models\Role;
+use App\Models\Village;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use DB;
+use Auth;
+use Hash;
+
+class VolunteerController extends Controller
+{
+    public function __construct() {
+        $this->middleware('auth.admin:admin');
+    }
+
+    public function index() {
+        $volunteer = Volunteer::orderBy('created_at')->get();
+        return view('admin.volunteer.view', compact('volunteer'));
+    }
+
+    public function create() {
+        $roles = Role::orderBy('created_at','desc')->get();
+        $villages = Village::orderBy('created_at','desc')->get();
+        return view('admin.volunteer.create', compact('roles','villages'));
+    }
+
+    public function store(Request $request) {
+
+        if(env('PROJECT_MODE') == 0) {
+            return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
+        }
+
+        $volunteer = new Volunteer();
+        $data = $request->only($volunteer->getFillable());
+
+        $request->validate([
+            'name' => 'required',
+            'phone' => 'required|max:10',
+            'experience' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image validation
+            'password' => 'required|confirmed|min:8',
+            'role_id' => 'required',
+            'village_id' => 'required',
+            'email' => [
+            'required',
+            'email',
+            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+            "unique:users,email",
+            ],
+
+        ]);
+        $data['password'] = Hash::make($request->password);
+
+        if($request->hasFile('image')){
+
+            $rand_value = md5(mt_rand(11111111,99999999));
+            $ext = $request->file('image')->extension();
+            $final_name = $rand_value.'.'.$ext;
+            $request->file('image')->move(public_path('uploads/volunteer/'), $final_name);
+            unset($data['image']);
+            $data['image'] = $final_name;
+        }
+        $data['village_id'] = implode(',', $request->village_id);
+        $volunteer->fill($data)->save();
+        return redirect()->route('admin_volunteer_view')->with('success', SUCCESS_ACTION);
+    }
+
+    public function edit($id) {
+        $volunteer = Volunteer::findOrFail($id);
+        $villages = Village::orderBy('created_at','desc')->get();
+        $roles = Role::orderBy('created_at','desc')->get();
+        return view('admin.volunteer.edit', compact('volunteer','roles','villages'));
+    }
+
+    public function update(Request $request, $id) {
+
+        if(env('PROJECT_MODE') == 0) {
+            return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
+        }
+
+        $volunteer = Volunteer::findOrFail($id);
+        $data = $request->only($volunteer->getFillable());
+
+        $request->validate([
+            'name' => 'required',
+            'phone' => 'required|max:10',
+            'experience' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image validation
+            'password' => 'nullable|confirmed|min:8',
+            'role_id' => 'required',
+            'village_id' => 'required',
+
+            'email' => [
+                'required',
+                'email',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+                Rule::unique('users')->ignore($volunteer->id), // Ignore the current record's email
+            ],
+        ]);
+        if($request->hasFile('image')){
+            @unlink(public_path('uploads/volunteer/'.$volunteer->image)); // Unlink old image
+            $ext = $request->file('image')->extension();
+            $rand_value = md5(mt_rand(11111111,99999999));
+            $final_name = $rand_value.'.'.$ext;
+            $request->file('image')->move(public_path('uploads/volunteer/'), $final_name);
+
+            $data['image'] = $final_name; // Update with new image name
+        }
+        if($request->filled('password')) {
+            $data['password'] = Hash::make($request->password); // Hash the password
+        } else {
+            unset($data['password']); // Do not update password if it's not provided
+        }
+        $data['village_id'] = implode(',', $request->village_id);
+        $volunteer->fill($data)->save();
+        return redirect()->route('admin_volunteer_view')->with('success', SUCCESS_ACTION);
+    }
+
+    public function destroy($id) {
+
+        if(env('PROJECT_MODE') == 0) {
+            return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
+        }
+
+        $volunteer = Volunteer::findOrFail($id);
+        $volunteer->delete();
+        return Redirect()->back()->with('success', SUCCESS_ACTION);
+    }
+
+    public function submitRejectionReason(Request $request)
+    {
+
+        $validated = $request->validate([
+            'id' => 'required|integer',
+            'rejection_reason' => 'required|string|max:255',
+        ]);
+
+        $model = Volunteer::find($validated['id']);
+        if (!$model) {
+            return response()->json(['error' => 'Record not found.'], 404);
+        }
+
+        $model->rejection_reason = $validated['rejection_reason'];
+        $model->status = '2';
+        $model->save();
+
+        return response()->json(['message' => 'Rejection reason submitted successfully.']);
+    }
+
+    public function changeStatus(Request $request)
+    {
+
+        $validated = $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|in:0,1,2', // 0 for Pending, 1 for Approved, 2 for Rejected
+        ]);
+
+
+        $model = Volunteer::find($validated['id']);
+
+        $model->status = $validated['status'];
+        $model->save();
+
+        return response()->json(['message' => 'Status changed successfully.']);
+    }
+
+
+}

@@ -6,7 +6,55 @@
 <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
 
     <h1 class="h3 mb-3 text-gray-800">View Event</h1>
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="d-flex justify-content-left">
+                    <form class="d-flex flex-wrap align-items-left" id="search" action="{{ route('admin_event_view') }}"  method="GET">
+                        <div class="me-sm-3 ml-2">
+                            <select name="status" class="form-control" id="statusFilter">
+                                <option selected disabled>--Event status--</option>
+                                <option value="1"  {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
+                                <option value="0"  {{ request('status') == '0' ? 'selected' : '' }}>Pending</option>
+                            </select>
+                        </div>
+                        <div class="me-sm-3 ml-2">
+                            <select name="event_status" class="form-control" id="statusFilter">
+                                <option selected disabled>--Current event status--</option>
+                                <option value="Completed"  {{ request('event_status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="Upcoming"  {{ request('event_status') == 'Upcoming' ? 'selected' : '' }}>Upcoming</option>
+                                <option value="Ongoing"  {{ request('event_status') == 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
+                            </select>
+                        </div>
+                        <div class="me-sm-3 ml-2">
+                            <input type="text" class="form-control my-1 my-lg-0" name="name" value="{{ request('name') }}" id="nameFilter" placeholder="Event Name...">
+                        </div>
 
+                        <div class="me-sm-3 ml-2">
+                            <select name="sort_by" class="form-control" id="statusFilter">
+                                <option value="id" {{ request('sort_by') == '' ? 'selected' : '' }}>--Please select Sort by--</option>
+                                <option value="id" {{ request('sort_by') == 'id' ? 'selected' : '' }}>Id</option>
+                                <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Name</option>
+                            </select>
+                        </div>
+
+                        <div class="me-sm-3 ml-2">
+                            <select name="sort_direction" class="form-control" id="sortDirectionFilter">
+                                <option value="ASC" {{ request('sort_direction') == 'ASC' ? 'selected' : '' }}>Ascending</option>
+                                <option value="DESC" {{ request('sort_direction') == 'DESC' ? 'selected' : '' }}>Descending</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <div class="text-lg-end my-1 my-lg-0">
+                                <a type="reset" href="{{ route('admin_event_view') }}" class="btn btn-secondary waves-effect waves-light">Clear</a>
+                                <button type="submit" class="btn btn-danger waves-effect waves-light">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 mt-2 font-weight-bold text-primary">Event</h6>
@@ -14,6 +62,7 @@
                 <a href="{{ route('admin_event_create') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> {{ ADD_NEW }}</a>
             </div>
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -76,7 +125,6 @@
                                     <span class="text-secondary">No volunteers assigned</span>
                                 @endif
                                 <p class="pt-2">
-
                                     <button class="btn btn-warning" onclick="openModal({{ $row->id }}, {{ json_encode($volunteerIds) }})">Assign to volunteer</button>
                                 </p>
                             </td>
@@ -98,8 +146,10 @@
                             </td>
                             <td>
                                 @if($row->event_status == 'Completed')
-                                <a href="{{ route('admin_event_view',$row->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-
+                                <a href="{{ route('admin_event_view_detail',$row->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
+                                @elseif($row->event_status == 'Ongoing')
+                                <a href="{{ route('admin_event_view_detail',$row->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
+                                    <a href="{{ route('admin_event_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                 @else
                                     <a href="{{ route('admin_event_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                     <a href="{{ route('admin_event_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
@@ -111,6 +161,11 @@
 
                     </tbody>
                 </table>
+
+                <div class="col-12">
+                    {{ $event->links() }}
+                </div>
+
                 <!-- Assign Volunteer Modal -->
                 <div class="modal fade" id="assignVolunteerModal" tabindex="-1" aria-labelledby="assignVolunteerLabel" aria-hidden="true">
                     <div class="modal-dialog">

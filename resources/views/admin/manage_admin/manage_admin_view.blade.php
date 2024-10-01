@@ -26,7 +26,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $row->username }}</td>
-                            <td>{{ $row->usertype ? $row->Role->name : '' }}</td>
+                            <td>{{ isset($row->Role->name) ? $row->Role->name : '' }}</td>
                             <td>
                                 <a href="{{ route('admin_manage_admin_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                 <a href="{{ route('admin_manage_admin_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>

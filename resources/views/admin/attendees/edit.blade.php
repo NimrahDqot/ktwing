@@ -33,8 +33,8 @@
                             </div>
                         </div>
                         <div class="offset-md-8 col-md-4">
-                            <a href="{{ asset('uploads/attendees/'.$attendees->image )}}" target="_blank">
-                                <img src="{{ asset('uploads/attendees/'.$attendees->image )}}" alt="{{ $attendees->name }}" class="w_200"  id="output">
+                            <a href="{{ asset($attendees->image )}}" target="_blank">
+                                <img src="{{ asset($attendees->image )}}" alt="{{ $attendees->name }}" class="w_100"  id="output">
                             </a>
                         </div>
                     </div>

@@ -6,11 +6,15 @@ use App\Models\EventCategory;
 use App\Models\Village;
 use App\Models\Volunteer;
 use App\Models\Attendees;
+use App\Models\EventCompleteRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use DB;
 use Auth;
+use App\Models\EventPhotoRequest;
+use App\Models\EventVideoRequest;
+use App\Models\EventAudioRequest;
 
 class EventController extends Controller
 {
@@ -18,8 +22,26 @@ class EventController extends Controller
         $this->middleware('auth.admin:admin');
     }
 
-    public function index() {
-        $event = Event::orderBy('created_at','desc')->get();
+    public function index(Request $request) {
+        $query = Event::query();
+        if (isset($request->status)) {
+            // echo $request->status;
+            $query->where('status', $request->status);
+        }
+        if (isset($request->event_status)) {
+            // echo $request->status;
+            $query->where('event_status', $request->event_status);
+        }
+
+        if ($request->name) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $sortBy = $request->input('sort_by', 'id');
+        $sortDirection = $request->input('sort_direction', 'ASC');
+
+        $query->orderBy($sortBy, $sortDirection);
+        $event = $query->paginate(5);
         $event_category = EventCategory::orderBy('created_at','desc')->get();
         $villages = Village::orderBy('created_at','desc')->get();
         $attendees = Attendees::orderBy('created_at','desc')->get();
@@ -32,6 +54,26 @@ class EventController extends Controller
         $villages = Village::orderBy('created_at','desc')->get();
         $attendees = Attendees::orderBy('created_at','desc')->get();
           return view('admin.event.create', compact('event_category','villages','attendees'));
+    }
+
+    public function show($id){
+        $event = Event::findOrFail($id);
+        $event_category = EventCategory::orderBy('created_at','desc')->get();
+        $villages = Village::orderBy('created_at','desc')->get();
+        $attendees = Attendees::orderBy('created_at','desc')->get();
+        $photoRequests = EventPhotoRequest::where('event_id', $id)->where('status','1')
+            ->select('id', 'volunteer_id', 'event_id', 'uploaded_photos', 'status')
+            ->get();
+
+        $videoRequests = EventVideoRequest::where('event_id', $id)->where('status','1')
+            ->select('id', 'volunteer_id', 'event_id', 'uploaded_videos', 'status')
+            ->get();
+
+        $audioRequests = EventAudioRequest::where('event_id', $id)->where('status','1')
+            ->select('id', 'volunteer_id', 'event_id', 'uploaded_audios', 'status')
+            ->get();
+        return view('admin.event.show', compact('event','event_category','villages','attendees','photoRequests','videoRequests','audioRequests'));
+
     }
 
     public function store(Request $request) {
@@ -265,4 +307,73 @@ class EventController extends Controller
 
         ]);
     }
+
+    public function event_request(Request $request){
+        // $users = Volunteer::all();
+        $events = Event::where('event_status','Completed')->select('id','name','volunteer_id')->get();
+        $volunteers = Volunteer::orderBy('created_at','desc')->get();
+
+        return view('admin.event.event_request', compact('events','volunteers'));
+        $users = Event::orderBy('created_at','desc')->where('event_status','Completed')->get();
+            return view('admin.event.event_request', compact('users'));
+    }
+
+
+    public function user_media_details($userId)
+    {
+        // Fetch related media requests
+        $photoRequests = EventPhotoRequest::where('event_id', $userId)
+            ->select('id', 'volunteer_id', 'event_id', 'uploaded_photos', 'status')
+            ->get();
+
+        $videoRequests = EventVideoRequest::where('event_id', $userId)
+            ->select('id', 'volunteer_id', 'event_id', 'uploaded_videos', 'status')
+            ->get();
+
+        $audioRequests = EventAudioRequest::where('event_id', $userId)
+            ->select('id', 'volunteer_id', 'event_id', 'uploaded_audios', 'status')
+            ->get();
+
+        // Get the active tab from the request or default to 'photo'
+        $activeTab = request()->get('activeTab', 'photo');
+
+        return view('admin.event.user_media', compact('photoRequests', 'videoRequests', 'audioRequests', 'activeTab'));
+    }
+
+
+    public function updateMediaStatus($id, $type, $status)
+    {
+        // Determine which model to use based on the 'type' parameter
+        switch ($type) {
+            case 'photo':
+                $mediaModel = new EventPhotoRequest();
+                break;
+            case 'video':
+                $mediaModel = new EventVideoRequest();
+                break;
+            case 'audio':
+                $mediaModel = new EventAudioRequest();
+                break;
+            default:
+                return redirect()->back()->with('error', 'Invalid media type');
+        }
+
+        // Fetch the media by its ID
+        $media = $mediaModel->find($id);
+
+        if (!$media) {
+            return redirect()->back()->with('error', ucfirst($type) . ' not found');
+        }
+
+        // Update the media status
+        $media->status = $status;
+        $media->save();
+
+        // Redirect back with success message and active tab
+        return redirect()->route('user_media_details', [
+            'id' => $media->event_id, // Assuming event_id corresponds to userId
+            'activeTab' => $type
+        ])->with('success', ucfirst($type) . ' status updated successfully');
+    }
+
 }

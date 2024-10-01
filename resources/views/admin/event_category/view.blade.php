@@ -30,15 +30,19 @@
                             <td>{{ Str::ucfirst($row->name) }}</td>
                             <td>
                                 @if ($row->status == '1')
-                                <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" checked data-toggle="toggle" data-on="Active" data-off="Pending" data-onstyle="success" data-offstyle="danger"></a>
+                                <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" checked data-toggle="toggle" data-on="Active" data-off="InActive" data-onstyle="success" data-offstyle="danger"></a>
                                 @else
-                                    <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" data-toggle="toggle" data-on="Active" data-off="Pending" data-onstyle="success" data-offstyle="danger"></a>
+                                    <a href="" onclick="changeStatus({{ $row->id }})"><input type="checkbox" data-toggle="toggle" data-on="Active" data-off="InActive" data-onstyle="success" data-offstyle="danger"></a>
                                 @endif
                             </td>
 
                             <td>
                                 <a href="{{ route('admin_event_category_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                <a href="{{ route('admin_event_category_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+
+                                @if(!$used_cat_ids->contains($row->id))
+                                    <a href="{{ route('admin_event_category_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                                </a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

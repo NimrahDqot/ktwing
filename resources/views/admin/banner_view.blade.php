@@ -26,7 +26,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $row->title }}</td>
-                            <td><img src="{{ asset('uploads/banner/'.$row->image) }}" alt="" class="w_200"></td>
+                            <td><img src="{{ asset($row->image) }}" alt="" class="w_100"></td>
                             <td>
                                 <a href="{{ route('admin_banner_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                 <a href="{{ route('admin_banner_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>

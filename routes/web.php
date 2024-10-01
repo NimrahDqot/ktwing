@@ -84,7 +84,7 @@ Route::get('admin/dashboard', [DashboardControllerForAdmin::class,'index'])
 
 Route::get('admin', function () {return redirect('admin/login');});
 
-Route::get('admin/login', [LoginControllerForAdmin::class,'login'])
+Route::get('/', [LoginControllerForAdmin::class,'login'])
     ->name('admin_login');
 
 Route::post('admin/login/store', [LoginControllerForAdmin::class,'login_check'])
@@ -931,6 +931,10 @@ Route::post('admin/volunteer/update/{id}', [VolunteerController::class,'update']
 ->name('admin_volunteer_update');
 
 
+Route::post('admin/send-volunteer-notification', [VolunteerController::class,'send_volunteer_notification'])
+->name('send_volunteer_notification');
+
+
 /* --------------------------------------- */
 /* Village Admin */
 /* --------------------------------------- */
@@ -1013,6 +1017,9 @@ Route::get('admin/attendees-status/{id}', [AttendeesController::class,'change_st
 Route::get('admin/event/view', [EventController::class,'index'])
 ->name('admin_event_view');
 
+Route::get('admin/event/details/{id}', [EventController::class,'show'])
+->name('admin_event_view_detail');
+
 Route::get('admin/event/create', [EventController::class,'create'])
 ->name('admin_event_create');
 
@@ -1035,6 +1042,10 @@ Route::post('admin/assign-attendee', [EventController::class, 'assign_attendee']
 
 Route::post('/admin/attendees', [EventController::class, 'storeAttendee'])->name('admin_attendees_store');
 
+Route::get('/admin/event-request', [EventController::class, 'event_request'])->name('admin_event_request_view');
+Route::get('/admin/user-media-details/{id}', [EventController::class, 'user_media_details'])->name('user_media_details');
+
+Route::post('/update-media-status/{id}/{type}/{status}', [EventController::class, 'updateMediaStatus'])->name('update_media_status');
 
 /* --------------------------------------- */
 /* App Language Admin */
@@ -1091,3 +1102,6 @@ Route::get('admin/visitor/delete/{id}', [VisitorController::class,'destroy'])
 ->name('admin_visitor_delete');
 
 Route::get('admin/visitor-status/{id}', [VisitorController::class,'change_status']);
+Route::get('version', function() {
+    return app()->version();
+});

@@ -77,7 +77,7 @@ $g_setting = \App\Models\GeneralSetting::where('id',1)->first();
             </a>
             <div id="collapseSetting" class="collapse {{ $route == 'admin_role_view'||$route == 'admin_role_create'||$route == 'admin_task_view'||$route =='admin_role_edit'||$route =='admin_task_create'||$route =='admin_manage_admin_view'||$route == 'admin_task_view'||$route == 'admin_task_edit' ? 'show' : '' }}" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="{{ route('admin_manage_admin_view') }}">Manage User</a>
+                    <a class="collapse-item" href="{{ route('admin_manage_admin_view') }}">Manage Admin</a>
                     <a class="collapse-item" href="{{ route('admin_role_view') }}">Manage Role</a>
                     <a class="collapse-item" href="{{ route('admin_task_view') }}">Manage Task</a>
                 </div>
@@ -248,6 +248,13 @@ $g_setting = \App\Models\GeneralSetting::where('id',1)->first();
             <a class="nav-link" href="{{ route('admin_visitor_view') }}">
                 <i class="far fa-caret-square-right"></i>
                 <span>Visitors</span>
+            </a>
+        </li>
+
+        <li class="nav-item {{ $route == 'admin_event_request_view'  ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin_event_request_view') }}">
+                <i class="far fa-caret-square-right"></i>
+                <span>Volunteer Event Request</span>
             </a>
         </li>
 

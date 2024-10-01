@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use App\Models\EventCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -16,7 +17,9 @@ class EventCategoryController extends Controller
 
     public function index() {
         $event_category = EventCategory::orderBy('created_at','desc')->get();
-        return view('admin.event_category.view', compact('event_category'));
+
+        $used_cat_ids  =Event::distinct()->pluck('event_category_id');
+          return view('admin.event_category.view', compact('event_category','used_cat_ids'));
     }
 
     public function create() {
@@ -33,7 +36,7 @@ class EventCategoryController extends Controller
         $data = $request->only($event_category->getFillable());
 
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:event_categories,name',
         ]);
 
         $event_category->fill($data)->save();
@@ -55,7 +58,10 @@ class EventCategoryController extends Controller
         $data = $request->only($event_category->getFillable());
 
         $request->validate([
-            'name' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('event_categories')->ignore($event_category->id),
+            ],
         ]);
 
         $event_category->fill($data)->save();

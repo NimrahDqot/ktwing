@@ -6,6 +6,9 @@ use App\Models\Volunteer;
 use App\Models\AppLanguage;
 use App\Models\Notification;
 use App\Models\Visitor;
+use App\Models\EventPhotoRequest;
+use App\Models\EventVideoRequest;
+use App\Models\EventAudioRequest;
 
 use Illuminate\Http\Request;
 use DB;
@@ -14,6 +17,7 @@ use App\Http\Controllers\Api\BaseController as BaseController;
 use App\Models\Attendees;
 use App\Models\Banner;
 use App\Models\Event;
+use App\Models\EventCompleteRequest;
 use Validator;
 use Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -253,17 +257,18 @@ class AuthController extends BaseController
             $user_id = $request->user_id;
             $type = $request->type;
             $per_page = isset($request->per_page) ? (int)$request->per_page : 10;
+            $page_no = isset($request->page_no) ? (int)$request->page_no : 1; // Default to page 1 if not set
 
 
             $events = Event::whereRaw("FIND_IN_SET(?, volunteer_id)", [$user_id])
             ->where('event_status',$type)
             ->with('village_info:name,id')
             ->select('id','event_status', 'image','name','village_id','event_date','event_time') // Select the required fields
-            ->paginate($per_page);
+            ->paginate($per_page,['*'], 'page', $page_no);
 
             $response = [
                 'current_page' => $events->currentPage(),
-                'next_page' => $events->hasMorePages() ? $events->currentPage() + 1 : null,
+                'next_page' => $events->hasMorePages() ? $events->currentPage() + 1 : $events->lastPage(),
                 'total_pages' => $events->lastPage(),
                 'data' => $events->map(function ($event) {
                     return [
@@ -349,9 +354,7 @@ class AuthController extends BaseController
             'uploaded_photos' => 'required|array',
             // 'uploaded_photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'uploaded_videos' => 'required|array',
-            // 'uploaded_videos.*' => 'mimes:mp4,mov,avi,wmv|max:10240',
             'uploaded_audios' => 'required|array',
-            // 'uploaded_audios.*' => 'mimes:mp3,wav,ogg|max:5120',
         ]);
         // Return validation errors if validation fails
         if ($validator->fails()) {
@@ -361,50 +364,59 @@ class AuthController extends BaseController
             $user_id = $request->user_id;
             $event_id = $request->event_id;
 
-            $event = Event::find($event_id);
+            $eventRequest = Event::find($event_id);
 
-            if (!$event) {
+            if (!$eventRequest) {
                 return $this->sendError('Event id not found.');
             }
-            $data = $request->only($event->getFillable());
 
-           if ($request->hasFile('uploaded_photos')) {
-                $photoNames = [];
+            if ($request->hasFile('uploaded_photos')) {
                 foreach ($request->file('uploaded_photos') as $photo) {
                     $photoName = md5(mt_rand(11111111, 99999999)) . '.' . $photo->extension();
                     $photo->move(public_path('uploads/event/photos'), $photoName);
-                    $photoNames[] = $photoName; // Add photo name to array
+
+                    // Create a new photo request record
+                    EventPhotoRequest::create([
+                        'event_id' => $event_id,
+                        'volunteer_id' => $user_id,
+                        'uploaded_photos' => $photoName,
+                    ]);
                 }
-                // Store photo names as a comma-separated string
-                $data['uploaded_photos'] = implode(',', $photoNames);
             }
 
-            // Handle multiple uploaded videos
+
             if ($request->hasFile('uploaded_videos')) {
-                $videoNames = [];
                 foreach ($request->file('uploaded_videos') as $video) {
                     $videoName = md5(mt_rand(11111111, 99999999)) . '.' . $video->extension();
                     $video->move(public_path('uploads/event/videos'), $videoName);
-                    $videoNames[] = $videoName; // Add video name to array
+
+                    // Create a new video request record
+                    EventVideoRequest::create([
+                        'event_id' => $event_id,
+                        'volunteer_id' => $user_id,
+                        'uploaded_videos' => $videoName,
+                    ]);
                 }
-                // Store video names as a comma-separated string
-                $data['uploaded_videos'] = implode(',', $videoNames);
             }
 
-            // Handle multiple uploaded audios
-            if ($request->hasFile('uploaded_audios')) {
-                $audioNames = [];
-                foreach ($request->file('uploaded_audios') as $audio) {
-                    $audioName = md5(mt_rand(11111111, 99999999)) . '.' . $audio->extension();
-                    $audio->move(public_path('uploads/event/audios'), $audioName);
-                    $audioNames[] = $audioName; // Add audio name to array
-                }
-                // Store audio names as a comma-separated string
-                $data['uploaded_audios'] = implode(',', $audioNames);
-            }
 
-            $event->fill($data)->save();
-            return $this->sendResponse($event, 'Event request created successfully.');
+           // Handle multiple uploaded audios
+        if ($request->hasFile('uploaded_audios')) {
+            foreach ($request->file('uploaded_audios') as $audio) {
+                $audioName = md5(mt_rand(11111111, 99999999)) . '.' . $audio->extension();
+                $audio->move(public_path('uploads/event/audios'), $audioName);
+
+                // Create a new audio request record
+                EventAudioRequest::create([
+                   'event_id' => $event_id,
+                    'volunteer_id' => $user_id,
+                    'uploaded_audios' => $audioName,
+                ]);
+            }
+        }
+
+                return $this->sendResponse($eventRequest, 'Event request created successfully.');
+
         }catch (\Exception $e) {
             // Handle exceptions and return error response
             return $this->sendError('An error occurred while retrieving app strings.', $e->getMessage());

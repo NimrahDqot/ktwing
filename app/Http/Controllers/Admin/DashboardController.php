@@ -4,6 +4,9 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Property;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\Village;
+use App\Models\Volunteer;
 use Illuminate\Http\Request;
 use Auth;
 
@@ -14,12 +17,12 @@ class DashboardController extends Controller
     }
 
     public function index() {
-        // $total_active_customers = User::where('status', 'Active')->count();
-        // $total_pending_customers = User::where('status', 'Pending')->count();
-        // $total_active_properties = Property::where('property_status', 'Active')->where('is_approved', '1')->count();
-        // $total_pending_properties = Property::where('property_status', 'Pending')->Orwhere('is_approved', '0')->count();
+        $total_villages = Village::where('status', '1')->count();
+        $total_volunteers = Volunteer::where('status', '1')->count();
+        $total_completed_events = Event::where('event_status', 'Completed')->where('status', '1')->count();
+        $total_upcoming_events = Event::where('event_status', 'Upcoming')->where('status', '1')->count();
+        $total_pending_events = Event::where('event_status', 'Upcoming')->where('status', '1')->count();
 
-        // return view('admin.home', compact('total_active_customers','total_pending_customers','total_active_properties','total_pending_properties'));
-        return view('admin.home');
+        return view('admin.home', compact('total_villages','total_volunteers','total_completed_events','total_upcoming_events','total_pending_events'));
     }
 }

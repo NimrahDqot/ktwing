@@ -34,7 +34,7 @@
                 <div class="form-group">
                     <label for="">{{ EXISTING_PHOTO }}</label>
                     <div>
-                        <img src="{{ asset('uploads/banner/'.$banner->image) }}" alt="" class="w_200">
+                        <img src="{{ asset($banner->image) }}" alt="" class="w_100">
                     </div>
                 </div>
                 <div class="form-group">

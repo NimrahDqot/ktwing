@@ -133,4 +133,6 @@ class Event extends Model
         // Return an empty array if no videos are set
         return [];
     }
+
+
 }

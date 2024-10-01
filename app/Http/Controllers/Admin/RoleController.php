@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\Volunteer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -16,11 +17,13 @@ class RoleController extends Controller
 
     public function index() {
         $role = Role::orderBy('created_at','desc')->get();
-        return view('admin.role_view', compact('role'));
+        $used_role_ids = Volunteer::distinct()->pluck('role_id');
+
+        return view('admin.role.view', compact('role','used_role_ids'));
     }
 
     public function create() {
-        return view('admin.role_create');
+        return view('admin.role.create');
     }
 
     public function store(Request $request) {
@@ -42,7 +45,7 @@ class RoleController extends Controller
 
     public function edit($id) {
         $role = Role::findOrFail($id);
-        return view('admin.role_edit', compact('role'));
+        return view('admin.role.edit', compact('role'));
     }
 
     public function update(Request $request, $id) {

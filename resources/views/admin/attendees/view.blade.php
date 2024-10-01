@@ -30,8 +30,8 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>
-                                <a href="{{ asset('uploads/attendees/'.$row->image )}}" target="_blank">
-                                    <img src="{{ asset('uploads/attendees/'.$row->image )}}" alt="{{ $row->name }}" class="w_50">
+                                <a href="{{ asset($row->image )}}" target="_blank">
+                                    <img src="{{ asset($row->image )}}" alt="{{ $row->name }}" class="w_50">
                                 </a>
                             </td>
                             <td>{{ Str::ucfirst($row->name) }}</td>

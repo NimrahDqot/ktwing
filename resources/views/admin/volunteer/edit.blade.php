@@ -18,6 +18,17 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label for="">Role *</label>
+                                <select name="role_id" id="" class="form-control">
+                                    <option disabled selected>--Select Role--</option>
+                                    @foreach($roles as $role)
+                                        <option value="{{$role->id}}"{{ $volunteer->role_id == $role->id ? "selected":""}}>{{$role->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label for="">Name</label>
                                 <input type="text" name="name" class="form-control" value="{{ old('name', $volunteer->name) }}">
                             </div>
@@ -28,24 +39,14 @@
                                 <input type="text" name="email" class="form-control" value="{{ old('email', $volunteer->email) }}">
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="">Mobile</label>
-                                <input type="text" name="phone" class="form-control" value="{{ old('phone', $volunteer->phone) }}">
-                            </div>
-                        </div>
+
                     </div>
                     <div class="row">
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Role *</label>
-                                <select name="role_id" id="" class="form-control">
-                                    <option disabled selected>--Select Role--</option>
-                                    @foreach($roles as $role)
-                                        <option value="{{$role->id}}"{{ $volunteer->role_id == $role->id ? "selected":""}}>{{$role->name}}</option>
-                                    @endforeach
-                                </select>
+                                <label for="">Mobile</label>
+                                <input type="text" name="phone" class="form-control" value="{{ old('phone', $volunteer->phone) }}">
                             </div>
                         </div>
                         <div class="col-md-4">

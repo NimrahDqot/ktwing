@@ -16,13 +16,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">{{ NAME }} *</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name') }}" autofocus>
+                            <input type="text" name="name" class="form-control text-uppercase" onkeydown="return /[a-zA-Z_]/i.test(event.key)" value="{{ old('name') }}">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">Key *</label>
-                            <input type="text" name="key" class="form-control" value="{{ old('key') }}" autofocus>
+                            <input type="text" name="key" class="form-control text-capitalize" value="{{ old('key') }}" autofocus>
                         </div>
                     </div>
             </div>

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Volunteer;
 use App\Models\Role;
 use App\Models\Village;
@@ -10,7 +11,8 @@ use Illuminate\Validation\Rule;
 use DB;
 use Auth;
 use Hash;
-
+use App\Mail\VolunteerNotificationMail;
+use Illuminate\Support\Facades\Mail;
 class VolunteerController extends Controller
 {
     public function __construct() {
@@ -166,6 +168,26 @@ class VolunteerController extends Controller
         $model->save();
 
         return response()->json(['message' => 'Status changed successfully.']);
+    }
+
+    public function send_volunteer_notification(Request $request){
+        $user_id =  $request->id;
+        $type =  $request->type;
+        $title =  $request->title;
+        $description =  $request->description;
+
+        $village = new Notification();
+        $village->user_id =  $user_id;
+        $village->type =  $type;
+        $village->title =  $title;
+        $village->description =  $description;
+        // $village->save();
+        $user = Volunteer::find($user_id);
+        $email = $user->email; // Assuming the user's email is available
+        // Send the email
+        Mail::to($email)->send(new VolunteerNotificationMail($type, $title, $description));
+
+        return redirect()->route('admin_village_view')->with('success', SUCCESS_ACTION);
     }
 
 

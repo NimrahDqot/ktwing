@@ -17,11 +17,11 @@ class ModuleController extends Controller
 
     public function index() {
         $manage_module = Module::orderBy('created_at','desc')->get();
-        return view('admin.module.admin_module_view', compact('manage_module'));
+        return view('admin.module.view', compact('manage_module'));
     }
 
     public function create() {
-        return view('admin.module.admin_module_create');
+        return view('admin.module.create');
     }
 
     public function store(Request $request) {
@@ -34,16 +34,18 @@ class ModuleController extends Controller
         $data = $request->only($manage_module->getFillable());
 
         $request->validate([
-            'name' => 'required',
-            'key' => 'required',
+            'name' => 'required|unique:modules,name',
+            'key' => 'required|unique:modules,key',
         ]);
+        $data['key'] =   str_replace(" ", "_", $request->key) ?? null;
+        $data['name'] =   str_replace("_", " ", $request->name) ?? null;
         $manage_module->fill($data)->save();
         return redirect()->route('admin_manage_module_view')->with('success', SUCCESS_ACTION);
     }
 
     public function edit($id) {
         $manage_module = Module::findOrFail($id);
-        return view('admin.module.admin_module_edit', compact('manage_module'));
+        return view('admin.module.edit', compact('manage_module'));
     }
 
     public function update(Request $request, $id) {
@@ -59,6 +61,8 @@ class ModuleController extends Controller
             'name' => 'required',
             'key' => 'required',
         ]);
+        $data['key'] =   str_replace(" ", "_", $request->key) ?? null;
+        $data['name'] =   str_replace("_", " ", $request->name) ?? null;
         $manage_module->fill($data)->save();
         return redirect()->route('admin_manage_module_view')->with('success', SUCCESS_ACTION);
     }

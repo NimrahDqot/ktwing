@@ -10,5 +10,14 @@ class Module extends Model
          'name', 'key', 'status', 'sort_by'
     ];
 
+    public function setKeyAttribute($value)
+    {
+        $this->attributes['key'] = strtoupper($value);
+    }
 
+    // Mutator for the 'name' attribute
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
+    }
 }

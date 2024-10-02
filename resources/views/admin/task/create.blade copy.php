@@ -47,7 +47,7 @@
                                     @foreach ($sub_module as $sub)
                                         @if ($sub->module_id == $row->id)
                                             <div class="form-check">
-                                                <input class="form-check-input sub_module" name="sub_module_id[]" type="checkbox" value="{{ $sub->id }}" id="sub_module_id{{ $sub->id }}">
+                                                <input class="form-check-input" name="sub_module_id[]" type="checkbox" value="{{ $sub->id }}" id="sub_module_id{{ $sub->id }}">
                                                 <label class="form-check-label" for="sub_module_id{{ $sub->id }}">
                                                     {{ $sub->name }}
                                                 </label>
@@ -78,28 +78,8 @@
 
                 // Set the state of all corresponding submodule checkboxes
                 const moduleId = moduleCheckbox.value;
-                const submoduleCheckboxes = document.querySelectorAll(`input[name="sub_module_id[]"]`);
-
-                submoduleCheckboxes.forEach(submoduleCheckbox => {
-                    if (submoduleCheckbox.id.startsWith('sub_module_id') && submoduleCheckbox.value === moduleId) {
-                        submoduleCheckbox.checked = isChecked;  // Check/uncheck submodules based on main module
-                    }
-                });
-            });
-        });
-
-        // Additional listener for individual module checkboxes to manage their submodules
-        document.querySelectorAll('input[name="module_id[]"]').forEach(moduleCheckbox => {
-            moduleCheckbox.addEventListener('change', function() {
-                const isChecked = this.checked;
-                const moduleId = this.value;
-
-                document.querySelectorAll('input[name="sub_module_id[]"]').forEach(submoduleCheckbox => {
-                    // Check if the submodule belongs to the current module
-                    if (submoduleCheckbox.id.startsWith('sub_module_id')) {
-                        const submoduleModuleId = submoduleCheckbox.value.split('_')[1]; // This should reflect how you structure IDs
-                        submoduleCheckbox.checked = isChecked && (submoduleCheckbox.value.startsWith(moduleId));
-                    }
+                document.querySelectorAll(`input[name="sub_module_id[]"][id^="sub_module_id"][id*="${moduleId}"]`).forEach(submoduleCheckbox => {
+                    submoduleCheckbox.checked = isChecked;
                 });
             });
         });

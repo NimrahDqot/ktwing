@@ -19,12 +19,12 @@ class SubModuleController extends Controller
     public function index() {
         $manage_module = SubModule::orderBy('created_at','desc')->get();
         $module = Module::orderBy('created_at','desc')->get();
-        return view('admin.sub_module.admin_sub_module_view', compact('manage_module','module'));
+        return view('admin.sub_module.view', compact('manage_module','module'));
     }
 
     public function create() {
         $module = Module::orderBy('created_at','desc')->get();
-        return view('admin.sub_module.admin_sub_module_create', compact('module'));
+        return view('admin.sub_module.create', compact('module'));
     }
 
     public function store(Request $request) {
@@ -36,8 +36,14 @@ class SubModuleController extends Controller
         $data = $request->only($manage_module->getFillable());
 
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:sub_modules,name',
+            'key' => 'required|unique:sub_modules,key',
+            'module_id' => 'required',
+        ] ,[
+            'module_id.required' => 'Please select module name.'
         ]);
+        $data['key'] =   str_replace(" ", "_", $request->key) ?? null;
+        $data['name'] =   str_replace("_", " ", $request->name) ?? null;
         $manage_module->fill($data)->save();
         return redirect()->route('admin_sub_manage_module_view')->with('success', SUCCESS_ACTION);
     }
@@ -45,7 +51,7 @@ class SubModuleController extends Controller
     public function edit($id) {
         $manage_module = SubModule::findOrFail($id);
         $module = Module::orderBy('created_at','desc')->get();
-        return view('admin.sub_module.admin_sub_module_edit', compact('manage_module','module'));
+        return view('admin.sub_module.edit', compact('manage_module','module'));
     }
 
     public function update(Request $request, $id) {
@@ -58,8 +64,15 @@ class SubModuleController extends Controller
         $data = $request->only($manage_module->getFillable());
 
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:sub_modules,name',
+            'key' => 'required|unique:sub_modules,key',
+            'module_id' => 'required',
+        ]
+        ,[
+            'module_id.required' => 'Please select module name.'
         ]);
+        $data['key'] =   str_replace(" ", "_", $request->key) ?? null;
+        $data['name'] =   str_replace("_", " ", $request->name) ?? null;
         $manage_module->fill($data)->save();
         return redirect()->route('admin_sub_manage_module_view')->with('success', SUCCESS_ACTION);
     }

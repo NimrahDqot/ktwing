@@ -14,4 +14,15 @@ class SubModule extends Model
     public function Module(){
       return  $this->belongsTo(Module::class);
     }
+
+    public function setKeyAttribute($value)
+    {
+        $this->attributes['key'] = strtoupper($value);
+    }
+
+    // Mutator for the 'name' attribute
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
+    }
 }

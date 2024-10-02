@@ -5,6 +5,7 @@ use App\Models\SubModule;
 use App\Models\Module;
 use App\Models\Task;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -21,16 +22,16 @@ class TaskController extends Controller
     public function index() {
         $sub_module = SubModule::orderBy('created_at','desc')->get();
         $module = Module::orderBy('created_at','desc')->get();
-        $role = Role::orderBy('created_at','desc')->get();
+        $admins = User::orderBy('created_at','desc')->get();
         $task = Task::with(['SubModule', 'Module'])->get();
-        return view('admin.task.view', compact('sub_module','module','role','task'));
+        return view('admin.task.view', compact('sub_module','module','admins','task'));
     }
 
     public function create() {
         $sub_module = SubModule::orderBy('created_at','desc')->get();
         $module = Module::orderBy('created_at','desc')->get();
-        $role = Role::orderBy('created_at','desc')->get();
-        return view('admin.task.create', compact('sub_module','module','role'));
+        $admins = User::orderBy('created_at','desc')->get();
+        return view('admin.task.create', compact('sub_module','module','admins'));
     }
 
     public function store(Request $request) {

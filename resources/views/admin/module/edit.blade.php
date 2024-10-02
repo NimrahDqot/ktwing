@@ -16,16 +16,17 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">{{ NAME }} *</label>
-                                <input type="text" name="name" class="form-control" value="{{ $manage_module->name }}" autofocus>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label for="">Key *</label>
                                 <input type="text" name="key" class="form-control" value="{{$manage_module->key }}" autofocus>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">{{ NAME }} *</label>
+                                <input type="text" name="name" class="form-control" value="{{ $manage_module->name }}" autofocus>
+                            </div>
+                        </div>
+
                 </div>
 
                 <button type="submit" class="btn btn-success">{{ SUBMIT }}</button>

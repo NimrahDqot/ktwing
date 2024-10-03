@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Admin;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,7 +17,7 @@ class ManageAdminController extends Controller
     }
 
     public function index() {
-        $manage_admin = User::orderBy('created_at','desc')->get();
+        $manage_admin = Admin::orderBy('created_at','desc')->get();
         $roles = Role::orderBy('created_at','desc')->get();
         return view('admin.manage_admin.manage_admin_view', compact('manage_admin','roles'));
     }
@@ -33,7 +33,7 @@ class ManageAdminController extends Controller
             return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
         }
 
-        $manage_admin = new User();
+        $manage_admin = new Admin();
         $data = $request->only($manage_admin->getFillable());
 
         $request->validate([
@@ -47,7 +47,7 @@ class ManageAdminController extends Controller
     }
 
     public function edit($id) {
-        $manage_admin = User::findOrFail($id);
+        $manage_admin = Admin::findOrFail($id);
         $roles = Role::orderBy('created_at','desc')->get();
         return view('admin.manage_admin.manage_admin_edit', compact('manage_admin','roles'));
     }
@@ -58,7 +58,7 @@ class ManageAdminController extends Controller
             return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
         }
 
-        $manage_admin = User::findOrFail($id);
+        $manage_admin = Admin::findOrFail($id);
         $data = $request->only($manage_admin->getFillable());
 
         $request->validate([
@@ -78,7 +78,7 @@ class ManageAdminController extends Controller
             return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
         }
 
-        $manage_admin = User::findOrFail($id);
+        $manage_admin = Admin::findOrFail($id);
         $manage_admin->delete();
         return Redirect()->back()->with('success', SUCCESS_ACTION);
     }

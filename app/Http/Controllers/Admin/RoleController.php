@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Role;
 use App\Models\Volunteer;
 use Illuminate\Http\Request;
@@ -16,11 +17,12 @@ class RoleController extends Controller
     }
 
     public function index() {
-        $role = Role::orderBy('created_at','desc')->get();
-        $used_role_ids = Volunteer::distinct()->pluck('role_id');
+        $roles = Role::orderBy('created_at', 'desc')->get();
+        $used_role_ids = Volunteer::distinct()->pluck('role_id')->merge(Admin::distinct()->pluck('usertype'));
 
-        return view('admin.role.view', compact('role','used_role_ids'));
+        return view('admin.role.view', compact('roles', 'used_role_ids'));
     }
+
 
     public function create() {
         return view('admin.role.create');
@@ -36,7 +38,7 @@ class RoleController extends Controller
         $data = $request->only($role->getFillable());
 
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:roles,name',
         ]);
 
         $role->fill($data)->save();
@@ -58,7 +60,11 @@ class RoleController extends Controller
         $data = $request->only($role->getFillable());
 
         $request->validate([
-            'name' => 'required',
+         'name' => [
+        'required',
+        Rule::unique('roles')->ignore($id) // where $id is the ID of the role being updated
+    ],
+
         ]);
 
         $role->fill($data)->save();

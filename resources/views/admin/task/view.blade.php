@@ -1,5 +1,6 @@
 @extends('admin.app_admin')
 @section('admin_content')
+
     <h1 class="h3 mb-3 text-gray-800">View Task</h1>
 
     <div class="card shadow mb-4">
@@ -26,19 +27,21 @@
                         @foreach($task as $row)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $row->role_id ? $row->Role->name : '' }}</td>
+                            <td>{{ isset($row->Role->name) ? $row->Role->name : '' }}</td>
                             <td>
                                 <ul>
-                                    @foreach($row->Module as $module)
-                                        <li>{{ $module->name }}</li>
+
+                                    @foreach(json_decode($row->module_id) as $moduleId)
+                                    <li> {{ App\Models\Module::find($moduleId)->name }}</li>
                                     @endforeach
                                 </ul>
                             </td>
                             <td>
                                 <ul>
-                                    @foreach($row->SubModule as $subModule)
-                                        <li>{{ $subModule->name }}</li>
-                                    @endforeach
+                                    @foreach(json_decode($row->sub_module_id) as $subModuleId)
+                                    <li>{{ App\Models\SubModule::find($subModuleId)->name }}</li>
+                                @endforeach
+
                                 </ul>
                             <td>
                                 <a href="{{ route('admin_task_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>

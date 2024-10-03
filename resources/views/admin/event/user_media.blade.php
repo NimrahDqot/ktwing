@@ -53,7 +53,7 @@
                                         @foreach ($photoRequest['uploaded_photos'] as $photo)
                                             <div class="card-body">
                                                 <!-- Show image -->
-                                                <img src="{{ $photo }}" class="img-fluid mb-2" alt="Uploaded Photo">
+                                                <img src="{{ $photo }}" class="img-fluid mb-2 w_300 h_200" alt="Uploaded Photo">
                                             </div>
                                         @endforeach
                                     @endif

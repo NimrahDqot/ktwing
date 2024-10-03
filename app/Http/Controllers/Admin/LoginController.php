@@ -36,6 +36,9 @@ class LoginController extends Controller
         ];
 
         if(Auth::guard('admin')->attempt($credential)) {
+               // Store the user's role in the session
+            $roleId = Auth::guard('admin')->user()->usertype;
+            session(['admin_role_id' => $roleId]);
             return redirect()->route('admin_dashboard');
         } else {
             return redirect()->back()->with('error', ERR_ADMIN_NOT_FOUND);
@@ -99,7 +102,7 @@ class LoginController extends Controller
         if(env('PROJECT_MODE') == 0) {
             return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
         }
-        
+
         $request->validate([
             'new_password' => 'required',
             'retype_password' => 'required|same:new_password',

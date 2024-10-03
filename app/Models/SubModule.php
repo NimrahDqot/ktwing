@@ -25,4 +25,5 @@ class SubModule extends Model
     {
         $this->attributes['name'] = ucwords($value);
     }
+
 }

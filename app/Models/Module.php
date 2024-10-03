@@ -20,4 +20,9 @@ class Module extends Model
     {
         $this->attributes['name'] = ucwords($value);
     }
+    public function subModules()
+    {
+        return $this->hasMany(SubModule::class);
+    }
 }
+

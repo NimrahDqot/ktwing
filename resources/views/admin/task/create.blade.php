@@ -19,8 +19,8 @@
                         <label for="">Admin *</label>
                         <select name="role_id" id="" class="form-control">
                             <option disabled selected>--Select Admin--</option>
-                            @foreach ($admins as $item)
-                                <option value="{{ $item->id }}">{{ $item->username }}</option>
+                            @foreach ($roles as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -38,7 +38,7 @@
                         @foreach ($module as $row)
                             <div class="list-group-item">
                                 <div class="form-check">
-                                    <input class="form-check-input" name="module_id[]" type="checkbox" value="{{ $row->id }}" id="module_id{{ $row->id }}">
+                                    <input class="form-check-input module" name="module_id[]" type="checkbox" value="{{ $row->id }}" id="module_id{{ $row->id }}">
                                     <label class="form-check-label" for="module_id{{ $row->id }}">
                                         <strong>{{ $row->name }}</strong>
                                     </label>
@@ -47,8 +47,8 @@
                                     @foreach ($sub_module as $sub)
                                         @if ($sub->module_id == $row->id)
                                             <div class="form-check">
-                                                <input class="form-check-input sub_module" name="sub_module_id[]" type="checkbox" value="{{ $sub->id }}" id="sub_module_id{{ $sub->id }}">
-                                                <label class="form-check-label" for="sub_module_id{{ $sub->id }}">
+                                                <input class="form-check-input sub_module" name="sub_module_id[]" type="checkbox" value="{{ $sub->id }}" id="sub_module_id{{ $sub->id }}" data-module-id="{{ $row->id }}">
+                                                <label class="form-check-label" for="sub_module_id{{ $sub->id }}"  >
                                                     {{ $sub->name }}
                                                 </label>
                                             </div>
@@ -61,47 +61,74 @@
                 </div>
             </div>
 
-            <div class="card-footer text-right">
+            <div class="card-footer text-left">
                 <button type="submit" class="btn btn-success">{{ SUBMIT }}</button>
             </div>
         </div>
     </form>
 
     <script>
-        // JavaScript to handle Select All functionality for modules and submodules
-        document.getElementById('select_all_modules').addEventListener('change', function() {
-            const isChecked = this.checked;
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectAllCheckbox = document.getElementById('select_all_modules');
+            const moduleCheckboxes = document.querySelectorAll('input[name="module_id[]"]');
+            const subModuleCheckboxes = document.querySelectorAll('input[name="sub_module_id[]"]');
 
-            // Set the state of all module checkboxes
-            document.querySelectorAll('input[name="module_id[]"]').forEach(moduleCheckbox => {
-                moduleCheckbox.checked = isChecked;
+            selectAllCheckbox.addEventListener('change', function () {
+                const isChecked = selectAllCheckbox.checked;
 
-                // Set the state of all corresponding submodule checkboxes
-                const moduleId = moduleCheckbox.value;
-                const submoduleCheckboxes = document.querySelectorAll(`input[name="sub_module_id[]"]`);
-
-                submoduleCheckboxes.forEach(submoduleCheckbox => {
-                    if (submoduleCheckbox.id.startsWith('sub_module_id') && submoduleCheckbox.value === moduleId) {
-                        submoduleCheckbox.checked = isChecked;  // Check/uncheck submodules based on main module
-                    }
-                });
-            });
-        });
-
-        // Additional listener for individual module checkboxes to manage their submodules
-        document.querySelectorAll('input[name="module_id[]"]').forEach(moduleCheckbox => {
-            moduleCheckbox.addEventListener('change', function() {
-                const isChecked = this.checked;
-                const moduleId = this.value;
-
-                document.querySelectorAll('input[name="sub_module_id[]"]').forEach(submoduleCheckbox => {
-                    // Check if the submodule belongs to the current module
-                    if (submoduleCheckbox.id.startsWith('sub_module_id')) {
-                        const submoduleModuleId = submoduleCheckbox.value.split('_')[1]; // This should reflect how you structure IDs
-                        submoduleCheckbox.checked = isChecked && (submoduleCheckbox.value.startsWith(moduleId));
-                    }
+                moduleCheckboxes.forEach(moduleCheckbox => {
+                    moduleCheckbox.checked = isChecked;
+                    const subCheckboxes = moduleCheckbox.closest('.list-group-item').querySelectorAll('.sub_module');
+                    subCheckboxes.forEach(subCheckbox => {
+                        subCheckbox.checked = isChecked;
+                    });
                 });
             });
         });
     </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle sub-module checkbox click
+    const subModuleCheckboxes = document.querySelectorAll('.sub_module');
+    subModuleCheckboxes.forEach(subModule => {
+        subModule.addEventListener('change', function() {
+            const moduleId = this.getAttribute('data-module-id');
+            const moduleCheckbox = document.getElementById(`module_id${moduleId}`);
+
+            // If a sub-module is checked, check its corresponding module
+            if (this.checked) {
+                moduleCheckbox.checked = true;
+            }
+        });
+    });
+
+    // Handle module checkbox click
+    const moduleCheckboxes = document.querySelectorAll('.module');
+    moduleCheckboxes.forEach(module => {
+        module.addEventListener('change', function() {
+            const moduleId = this.value; // Get the module ID
+            const subModuleCheckboxes = document.querySelectorAll(`.sub_module[data-module-id="${moduleId}"]`);
+
+            // Check or uncheck all sub-modules based on the module checkbox
+            subModuleCheckboxes.forEach(subModule => {
+                subModule.checked = this.checked; // Check or uncheck
+            });
+        });
+    });
+
+    // Handle select all modules checkbox
+    document.getElementById('select_all_modules').addEventListener('change', function() {
+        const allModules = document.querySelectorAll('.module');
+        const allSubModules = document.querySelectorAll('.sub_module');
+        allModules.forEach(module => {
+            module.checked = this.checked; // Check/uncheck each module
+        });
+        allSubModules.forEach(subModule => {
+            subModule.checked = this.checked; // Check/uncheck each sub-module
+        });
+    });
+});
+
+</script>
 @endsection

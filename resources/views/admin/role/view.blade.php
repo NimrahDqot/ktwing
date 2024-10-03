@@ -21,7 +21,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach($role as $row)
+                        @foreach($roles as $row)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $row->name }}</td>

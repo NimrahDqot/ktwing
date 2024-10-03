@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Village;
+use App\Models\Module;
 use App\Models\Volunteer;
 use Illuminate\Http\Request;
 use Auth;
@@ -22,7 +23,7 @@ class DashboardController extends Controller
         $total_completed_events = Event::where('event_status', 'Completed')->where('status', '1')->count();
         $total_upcoming_events = Event::where('event_status', 'Upcoming')->where('status', '1')->count();
         $total_pending_events = Event::where('event_status', 'Upcoming')->where('status', '1')->count();
-
-        return view('admin.home', compact('total_villages','total_volunteers','total_completed_events','total_upcoming_events','total_pending_events'));
+        $modules = Module::with('subModules')->get();
+        return view('admin.home', compact('total_villages','total_volunteers','total_completed_events','total_upcoming_events','total_pending_events','modules'));
     }
 }

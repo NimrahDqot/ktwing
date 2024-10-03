@@ -371,57 +371,120 @@ class AuthController extends BaseController
             }
 
             if ($request->hasFile('uploaded_photos')) {
-                foreach ($request->file('uploaded_photos') as $photo) {
-                    $photoName = md5(mt_rand(11111111, 99999999)) . '.' . $photo->extension();
-                    $photo->move(public_path('uploads/event/photos'), $photoName);
+                foreach ($request->file('uploaded_photos') as $uploadedImage) {
+                    try {
+                        $imageName = $request->user_id . '-' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+                        $uploadedImage->move(public_path('uploads/event/photos'), $imageName);
 
-                    // Create a new photo request record
-                    EventPhotoRequest::create([
-                        'event_id' => $event_id,
-                        'volunteer_id' => $user_id,
-                        'uploaded_photos' => $photoName,
-                    ]);
+                        // Create a new EventPhotoRequest and collect the instance
+                        $createdPhoto = EventPhotoRequest::create([
+                            'event_id' => $request->event_id,
+                            'volunteer_id' => $request->user_id,
+                            'uploaded_photos' => $imageName,
+                        ]);
+
+                        // Add the created instance to the array
+                        $createdPhotos[] = $createdPhoto;
+                    } catch (\Exception $e) {
+                        // Handle any exceptions that may occur
+                        return $this->sendError('Error uploading photo: ' . $e->getMessage());
+                    }
                 }
-            }
-
-
-            if ($request->hasFile('uploaded_videos')) {
-                foreach ($request->file('uploaded_videos') as $video) {
-                    $videoName = md5(mt_rand(11111111, 99999999)) . '.' . $video->extension();
+           }
+           if ($request->hasFile('uploaded_videos')) {
+            foreach ($request->file('uploaded_videos') as $video) {
+                try {
+                    $videoName = $request->user_id . '-' . uniqid() . '.' . $video->getClientOriginalExtension();
                     $video->move(public_path('uploads/event/videos'), $videoName);
 
-                    // Create a new video request record
-                    EventVideoRequest::create([
+                    // Create a new EventPhotoRequest and collect the instance
+                    $createdVideo = EventVideoRequest::create([
                         'event_id' => $event_id,
                         'volunteer_id' => $user_id,
                         'uploaded_videos' => $videoName,
                     ]);
+
+                    // Add the created instance to the array
+                    $createdVideos[] = $createdVideo;
+                } catch (\Exception $e) {
+                    // Handle any exceptions that may occur
+                    return $this->sendError('Error uploading photo: ' . $e->getMessage());
                 }
             }
-
-
-           // Handle multiple uploaded audios
-        if ($request->hasFile('uploaded_audios')) {
-            foreach ($request->file('uploaded_audios') as $audio) {
-                $audioName = md5(mt_rand(11111111, 99999999)) . '.' . $audio->extension();
+        }
+       if ($request->hasFile('uploaded_audios')) {
+        foreach ($request->file('uploaded_audios') as $audio) {
+            try {
+                $audioName = $request->user_id . '-' . uniqid() . '.' . $audio->getClientOriginalExtension();
                 $audio->move(public_path('uploads/event/audios'), $audioName);
 
-                // Create a new audio request record
-                EventAudioRequest::create([
-                   'event_id' => $event_id,
-                    'volunteer_id' => $user_id,
-                    'uploaded_audios' => $audioName,
-                ]);
+                    // Create a new EventPhotoRequest and collect the instance
+                    $createdAudio =  EventAudioRequest::create([
+                        'event_id' => $event_id,
+                        'volunteer_id' => $user_id,
+                        'uploaded_audios' => $audioName,
+                    ]);
+
+                    // Add the created instance to the array
+                    $createdAudios[] = $createdAudio;
+                } catch (\Exception $e) {
+                    // Handle any exceptions that may occur
+                    return $this->sendError('Error uploading photo: ' . $e->getMessage());
+                }
             }
         }
+        $success['createdPhotos'] = $createdPhotos;
+        $success['createdVideos'] = $createdVideos;
+        $success['createdAudios'] = $createdAudios;
+        return $this->sendResponse($success, 'Event request created successfully.');
 
-                return $this->sendResponse($eventRequest, 'Event request created successfully.');
+            }catch (\Exception $e) {
+                // Handle exceptions and return error response
+                return $this->sendError('An error occurred while retrieving app strings.', $e->getMessage());
+            }
+    }
+    public function create_event_requestn(Request $request){
 
-        }catch (\Exception $e) {
-            // Handle exceptions and return error response
-            return $this->sendError('An error occurred while retrieving app strings.', $e->getMessage());
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:volunteers,id|max:25',
+            'event_id' => 'required|exists:events,id|max:25',
+            'uploaded_photos' => 'required|array',
+            // 'uploaded_photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'uploaded_videos' => 'required|array',
+            // 'uploaded_audios' => 'required|array',
+        ]);
+        // Return validation errors if validation fails
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors()->first());
+        }
+
+            $createdPhotos = []; // Initialize an array to hold created photo requests
+
+        if ($request->hasFile('uploaded_photos')) {
+            foreach ($request->file('uploaded_photos') as $uploadedImage) {
+                try {
+                    $imageName = $request->user_id . '-' . uniqid() . '.' . $uploadedImage->getClientOriginalExtension();
+                    $uploadedImage->move(public_path('uploads/event/photos'), $imageName);
+
+                    // Create a new EventPhotoRequest and collect the instance
+                    $createdPhoto = EventPhotoRequest::create([
+                        'event_id' => $request->event_id,
+                        'volunteer_id' => $request->user_id,
+                        'uploaded_photos' => $imageName,
+                    ]);
+
+                    // Add the created instance to the array
+                    $createdPhotos[] = $createdPhoto;
+                } catch (\Exception $e) {
+                    // Handle any exceptions that may occur
+                    return $this->sendError('Error uploading photo: ' . $e->getMessage());
+                }
+            }
+            return $this->sendResponse($createdPhotos, 'Event photos uploaded successfully.');
         }
     }
+
+
 
     public function event_medias(Request $request)
     {

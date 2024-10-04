@@ -1,13 +1,8 @@
 
 @extends('admin.app_admin')
 @section('admin_content')
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
 
-<style>
-
-</style>
-    <h1 class="h3 mb-3 text-gray-800">Add Attendees</h1>
+    <h1 class="h3 mb-3 text-gray-800">Add Event</h1>
 
     <form action="{{ route('admin_event_store') }}" method="post" enctype="multipart/form-data">
         @csrf
@@ -27,7 +22,7 @@
                             <select name="event_category_id" class="form-control">
                                 <option value="" disabled selected>-Select event category-</option>
                                 @foreach($event_category as $category)
-                                    <option value="{{ $category->id}}">{{$category->name}}</option>
+                                    <option value="{{ $category->id}}" {{old('event_category_id') == $category->id ? 'selected' : ''}}>{{$category->name}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -50,7 +45,7 @@
                             <select name="village_id"  class="form-control">
                                 <option value="" disabled selected>-Select event category-</option>
                                 @foreach($villages as $village)
-                                    <option value="{{$village->id}}">{{$village->name}}</option>
+                                    <option value="{{$village->id}}" {{old('village_id') == $village->id ? 'selected' : ''}}>{{$village->name}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -58,20 +53,21 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Date</label>
-                            <input type="date" name="event_date" class="form-control"  value="{{ old('event_date') }}">
+                            <input type="date" name="event_date" class="form-control"  value="{{ old('event_date', date('Y-m-d')) }}"
+                            min="{{ date('Y-m-d') }}">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Event Time</label>
-                            <input type="time" name="event_time" class="form-control"  value="{{ old('event_time') }}">
+                            <input type="time" id="event_time" name="event_time"  value="{{ old('event_time') }}" class="form-control" required>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Event Duration</label>
-                            <input type="text" name="event_duration" class="form-control"  value="{{ old('event_duration') }}">
+                            <input type="text" name="event_duration" class="form-control"   value="{{ old('event_duration') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -94,74 +90,6 @@
                             <input type="text" name="resoure_list" class="form-control"  value="{{ old('resoure_list') }}">
                         </div>
                     </div>
-                    {{-- <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Important Attendees</label>
-                                <select name="attendees_id[]" data-placeholder="-Select Attendees-" multiple class="chosen-select">
-                                    <option value="" disabled>-Select Attendees-</option>
-                                    @foreach($attendees as $attendee)
-                                        <option value="{{ $attendee->id }}"  >{{ $attendee->name }}</option>
-                                    @endforeach
-                                </select>
-                        </div>
-                    </div> --}}
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Important Attendees</label>
-                            <select name="attendees_id[]" data-placeholder="-Select Attendees-" multiple class="chosen-select">
-                                <option value="" disabled>-Select Attendees-</option>
-                                @foreach($attendees as $attendee)
-                                    <option value="{{ $attendee->id }}">{{ $attendee->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- <div class="col-md-4" id="attendeeImages">
-                        <!-- Selected attendee images will be displayed here -->
-                    </div> --}}
-
-                    <div class="col-md-4">
-                        <button type="button" class="btn btn-info mt-4" data-toggle="modal" data-target="#attendeeModal">
-                            + Add Attendee
-                        </button>
-
-                    </div>
-                    <!-- Modal -->
-                    <div class="modal fade" id="attendeeModal" tabindex="-1" role="dialog" aria-labelledby="attendeeModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="attendeeModalLabel">Add New Attendee</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="attendeeForm">
-                                        @csrf
-                                        <div class="form-group">
-                                            <label for="new_attendee_name">Name</label>
-                                            <input type="text" id="new_attendee_name" class="form-control" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="new_attendee_role">Role</label>
-                                            <input type="text" id="new_attendee_role" class="form-control" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="new_attendee_image">Image</label>
-                                            <input type="file" id="new_attendee_image" accept="image/*" class="form-control" required>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary btn-close" data-dismiss="modal">Close</button>
-                                    <button type="button" id="add_attendee" class="btn btn-primary">Add Attendee</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Image</label>
@@ -169,7 +97,12 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <img id="output" class="w_300"/>
+                        <img id="output" class="w_150" style="cursor: pointer;" onclick="zoomImage(this)" />
+                    </div>
+                    <div id="modal" class="modal modal-image" onclick="closeModal()">
+                        <span class="close close-image" onclick="closeModal()">&times;</span>
+                        <img class="modal-image-content modal-content" id="modalImage">
+                        <div id="caption"></div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success">{{ SUBMIT }}</button>
@@ -178,169 +111,40 @@
         </div>
     </form>
 @endsection
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
-<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
+
 <script>
-    $(document).ready(function() {
-        $('#add_attendee').on('click', function() {
-            var attendeeName = $('#new_attendee_name').val();
-            var attendeeRole = $('#new_attendee_role').val();
-            var attendeeImage = $('#new_attendee_image')[0].files[0];
+    document.addEventListener('DOMContentLoaded', function () {
+        const timeInput = document.getElementById('event_time');
 
-            if (attendeeName && attendeeRole && attendeeImage) {
-                var formData = new FormData();
-                formData.append('name', attendeeName);
-                formData.append('role', attendeeRole);
-                formData.append('image', attendeeImage);
-                formData.append('_token', '{{ csrf_token() }}');
+        // Function to set minimum time
+        function setMinTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
 
-                $.ajax({
-                    url: "{{ route('admin_attendees_store') }}", // Replace with your route
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        console.log(response);
-                        if (response.success) {
-                            toastr.success(response.message);
-                            $('.btn-close').click();
-                            var newAttendee = response.attendee;
+            // Calculate the minimum time in 24-hour format
+            let minHours = hours;
+            let minMinutes = minutes;
 
-                            // Log newAttendee to check its structure
-                            console.log(newAttendee);
-
-                            var newAttendee = response.attendee;
-                            console.log(newAttendee);
-                            var option = new Option(newAttendee.name, newAttendee.id, true, true);
-                            console.log(option);
-                            $('select[name="attendees_id[]"]').append(option);
-                            $('select[name="attendees_id[]"]').trigger('chosen:updated');
-                        } else {
-                            alert('Error: ' + response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        alert('An error occurred. Please try again.');
-                    }
-                });
-            } else {
-                alert('Please fill in all fields.');
+            // If current minutes are greater than 0, set min time to the next hour
+            if (minutes > 0) {
+                minHours = (hours + 1) % 24; // Move to the next hour
+                minMinutes = 0; // Set minutes to 0 for the next full hour
             }
-        });
-    });
-</script>
 
+            // Format the min time for the input in 24-hour format
+            const minTimeIn24Hour = `${String(minHours).padStart(2, '0')}:${String(minMinutes).padStart(2, '0')}`;
 
-{{-- <script>
-    $(document).ready(function() {
-        $('#add_attendee').on('click', function() {
-            var attendeeName = $('#new_attendee_name').val();
-            var attendeeRole = $('#new_attendee_role').val();
-            var attendeeImage = $('#new_attendee_image')[0].files[0];
+            // Set the input value to the current time in 24-hour format
+            const currentTimeIn24Hour = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            // timeInput.value = currentTimeIn24Hour;
+            timeInput.min = currentTimeIn24Hour;
 
-            if (attendeeName && attendeeRole && attendeeImage) {
-                var formData = new FormData();
-                formData.append('name', attendeeName);
-                formData.append('role', attendeeRole);
-                formData.append('image', attendeeImage);
-                formData.append('_token', '{{ csrf_token() }}');
-
-                $.ajax({
-                    url: "{{ route('admin_attendees_store') }}", // Replace with your route
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        console.log(response);
-                        if (response.success) {
-                            var newAttendee = response.attendee;
-
-                            toastr.success(response.message);
-                            location.reload(); // Reload page or handle rejection dynamically
-
-                        } else {
-                            alert('Error: ' + response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        alert('An error occurred. Please try again.');
-                    }
-                });
-            } else {
-                alert('Please fill in all fields.');
-            }
-        });
-    });
-</script> --}}
-
-<script>
-    // function displayAttendeeImages() {
-    //     const selectElement = document.getElementById('attendeesSelect');
-    //     const imagesContainer = document.getElementById('attendeeImages');
-    //     imagesContainer.innerHTML = ''; // Clear previous images
-
-    //     Array.from(selectElement.selectedOptions).forEach(option => {
-    //         const imgSrc = option.getAttribute('data-image');
-    //         if (imgSrc) {
-    //             const imgElement = document.createElement('img');
-    //             imgElement.src = imgSrc;
-    //             imgElement.alt = option.text;
-    //             imgElement.className = 'w_200 m-1'; // Add styling as needed
-    //             imagesContainer.appendChild(imgElement);
-    //         }
-    //     });
-    // }
-
-</script>
-<script>
-    // $(document).ready(function() {
-    //     $(".chosen-select").chosen({
-    //         no_results_text: "Oops, nothing found!",
-    //         width: "100%"
-    //     });
-    // });
-
-    // function displayAttendeeImages() {
-    //     const selectedValues = $('#attendeesSelect').val(); // Get selected values
-    //     const imagesContainer = $('#attendeeImages');
-    //     imagesContainer.empty(); // Clear previous images
-
-    //     selectedValues.forEach(value => {
-    //         const option = $(`#attendeesSelect option[value="${value}"]`);
-    //         const imgSrc = option.data('image');
-    //         const imgElement = $('<img>').attr('src', imgSrc).addClass('w_200 m-1'); // Add styling as needed
-    //         imagesContainer.append(imgElement);
-    //     });
-    // }
-</script>
-<script>
-    $(document).ready(function() {
-        $(".chosen-select").chosen({
-            no_results_text: "Oops, nothing found!",
-            width: "100%"
-        });
-    });
-
-    function displayAttendeeImages() {
-        const selectedValues = $('#attendeesSelect').val(); // Get selected values
-        const imagesContainer = $('#attendeeImages');
-        imagesContainer.empty(); // Clear previous images
-
-        // Check if any options are selected
-        if (selectedValues.length === 0) {
-            imagesContainer.append('<p>No attendees selected.</p>'); // Optional: message if no selections
-            return;
+            // Log the minimum time for debugging
+            console.log('Current Time (24-hour):', currentTimeIn24Hour);
+            console.log('Minimum Time (24-hour):', minTimeIn24Hour);
         }
 
-        selectedValues.forEach(value => {
-            const option = $(`#attendeesSelect option[value="${value}"]`);
-            const imgSrc = option.data('image');
-            const imgElement = $('<img>').attr('src', imgSrc).addClass('w_200 m-1'); // Add styling as needed
-            imagesContainer.append(imgElement);
-        });
-    }
+        setMinTime();
+    });
 </script>
-

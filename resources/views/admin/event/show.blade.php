@@ -1,6 +1,6 @@
 @extends('admin.app_admin')
 @section('admin_content')
-    <h1 class="h3 mb-3 text-gray-800">{{ CUSTOMER_DETAIL }}</h1>
+    <h1 class="h3 mb-3 text-gray-800">Event Detail</h1>
 
     <div class="row">
         <div class="col-md-12">

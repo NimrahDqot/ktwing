@@ -21,86 +21,17 @@ class TaskController extends Controller
     }
 
     public function index() {
-        $sub_module = SubModule::orderBy('created_at','desc')->get();
-        $module = Module::orderBy('created_at','desc')->get();
-        $roles = Role::orderBy('created_at','desc')->get();
-        // $task = Task::with(['SubModule', 'Module'])->get();
-        $task = Task::with(['modules', 'subModules'])->get();
-
+        $task = Task::with(['modules', 'subModules'])->paginate(10);
         return view('admin.task.view', compact('task'));
-        // return view('admin.task.view', compact('sub_module','module','roles','task'));
-
     }
 
     public function create() {
         $sub_module = SubModule::orderBy('created_at','desc')->get();
         $module = Module::orderBy('created_at','desc')->get();
-        $roles = Role::orderBy('created_at','desc')->get();
+        $roles = Role::active()->orderBy('created_at','desc')->get();
         return view('admin.task.create', compact('sub_module','module','roles'));
     }
 
-    // public function store(Request $request) {
-    //     dd($request->all());
-
-    //     if(env('PROJECT_MODE') == 0) {
-    //         return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
-    //     }
-    //      $request->validate([
-    //         'role_id' => 'required|unique:tasks,role_id',
-    //         'module_id' => 'required',
-    //     ]);
-    //     $task = new Task();
-    //     $data = $request->only($task->getFillable());
-    //     $data['module_id']= json_encode($request['module_id']);
-    //     $data['sub_module_id']= json_encode($request['sub_module_id']) ?? null;
-
-    //     $task->fill($data)->save();
-    //     return redirect()->route('admin_task_view')->with('success', SUCCESS_ACTION);
-    // }
-    // public function store(Request $request)
-    // {
-    //     if (env('PROJECT_MODE') == 0) {
-    //         return redirect()->back()->with('error', env('PROJECT_NOTIFICATION'));
-    //     }
-
-    //     // Validate request
-    //     $request->validate([
-    //         'role_id' => 'required|unique:tasks,role_id',
-    //         'module_id' => 'required|array',
-    //         'module_id.*' => 'exists:modules,id', // Validate each module_id exists
-    //         'sub_module_id' => 'required|array',
-    //         'sub_module_id.*' => 'exists:sub_modules,id', // Validate each sub_module_id exists
-    //     ]);
-
-    //     // Create a new task
-    //     $task = new Task();
-    //     $data = $request->only($task->getFillable());
-    //     $data['module_id'] = json_encode($request['module_id']);
-    //     $data['sub_module_id'] = json_encode($request['sub_module_id']) ?? null;
-
-    //     // Save the task
-    //     $task->fill($data);
-    //     $task->save();
-
-    //     // Store module-submodule-role relationships
-    //     foreach ($request->module_id as $moduleId) {
-    //         foreach ($request->sub_module_id as $subModuleId) {
-    //             // Check if the submodule belongs to the module
-    //             $subModule = SubModule::find($subModuleId);
-    //             if ($subModule && $subModule->module_id == $moduleId) {
-    //                 ModuleSubmoduleRole::create([
-
-    //                     'task_id' => $task->id,
-    //                     'module_id' => $moduleId,
-    //                     'sub_module_id' => $subModuleId,
-    //                     'role_id' => $request->role_id,
-    //                 ]);
-    //             }
-    //         }
-    //     }
-
-    //     return redirect()->route('admin_task_view')->with('success', SUCCESS_ACTION);
-    // }
     public function store(Request $request)
     {
         if (env('PROJECT_MODE') == 0) {

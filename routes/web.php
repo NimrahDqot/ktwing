@@ -192,7 +192,7 @@ Route::post('admin/banner/update/{id}', [BannerController::class,'update'])
 /* Currency */
 /* --------------------------------------- */
 Route::get('admin/manage-admin/view', [ManageAdminController::class,'index'])
-->name('admin_manage_admin_view');
+->name('admin_view');
 
 Route::get('admin/manage-admin/create', [ManageAdminController::class,'create'])
 ->name('admin_manage_admin_create');
@@ -209,6 +209,8 @@ Route::get('admin/manage-admin/edit/{id}', [ManageAdminController::class,'edit']
 Route::post('admin/manage-admin/update/{id}', [ManageAdminController::class,'update'])
 ->name('admin_manage_admin_update');
 
+Route::get('admin/activate-status/{id}', [ManageAdminController::class,'activate_status']);
+Route::get('admin/is-admin-status/{id}', [ManageAdminController::class,'is_admin_status']);
 
 /* --------------------------------------- */
 /* Module Management */

@@ -5,7 +5,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 mt-2 font-weight-bold text-primary">Module</h6>
+            <h6 class="m-0 mt-2 font-weight-bold text-primary">Task</h6>
             <div class="float-right d-inline">
                 <a href="{{ route('admin_task_create') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> {{ ADD_NEW }}</a>
             </div>
@@ -30,28 +30,36 @@
                             <td>{{ isset($row->Role->name) ? $row->Role->name : '' }}</td>
                             <td>
                                 <ul>
-
+                                    @if(isset($row->module_id))
                                     @foreach(json_decode($row->module_id) as $moduleId)
                                     <li> {{ App\Models\Module::find($moduleId)->name }}</li>
                                     @endforeach
+                                    @endif
                                 </ul>
                             </td>
                             <td>
                                 <ul>
+                                    @if(isset($row->sub_module_id))
                                     @foreach(json_decode($row->sub_module_id) as $subModuleId)
-                                    <li>{{ App\Models\SubModule::find($subModuleId)->name }}</li>
-                                @endforeach
+                                        <li>{{ App\Models\SubModule::find($subModuleId)->name }}</li>
+                                    @endforeach
+                                @endif
 
                                 </ul>
                             <td>
+
                                 <a href="{{ route('admin_task_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                <a href="{{ route('admin_task_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
-                            </td>
+                                <a href="{{ route('admin_task_delete',$row->id) }}" class="btn btn-danger btn-sm {{ $row->role_id == Auth::user()->role_id ? 'disabled' : '' }} " onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                                   </td>
                         </tr>
                         @endforeach
 
                     </tbody>
                 </table>
+                <div class="col-12">
+                    {{ $task->links() }}
+                </div>
+
             </div>
         </div>
     </div>

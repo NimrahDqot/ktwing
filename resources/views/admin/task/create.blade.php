@@ -6,7 +6,7 @@
         @csrf
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Task Details</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Assign Task</h6>
                 <div>
                     <a href="{{ route('admin_task_view') }}" class="btn btn-primary btn-sm">
                         <i class="fa fa-plus"></i> {{ VIEW_ALL }}

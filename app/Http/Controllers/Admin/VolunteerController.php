@@ -20,13 +20,13 @@ class VolunteerController extends Controller
     }
 
     public function index() {
-        $volunteer = Volunteer::orderBy('created_at')->get();
+        $volunteer = Volunteer::orderBy('created_at')->paginate(10);
         return view('admin.volunteer.view', compact('volunteer'));
     }
 
     public function create() {
-        $roles = Role::orderBy('created_at','desc')->get();
-        $villages = Village::orderBy('created_at','desc')->get();
+        $roles = Role::active()->orderBy('created_at','desc')->get();
+        $villages = Village::active()->orderBy('created_at','desc')->get();
         return view('admin.volunteer.create', compact('roles','villages'));
     }
 

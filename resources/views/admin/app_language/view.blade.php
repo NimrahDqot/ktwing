@@ -1,6 +1,6 @@
 @extends('admin.app_admin')
 @section('admin_content')
-    <h1 class="h3 mb-3 text-gray-800">{{ LANGUAGE_WEBSITE_TEXT }}</h1>
+    <h1 class="h3 mb-3 text-gray-800">View App Language</h1>
 
 
     <div class="row">
@@ -45,7 +45,9 @@
 
                                             <td>
                                                 <a href="{{ route('admin_app_language_edit',$row->id) }}" class="btn btn-warning btn-sm  "><i class="fas fa-edit"></i></a>
+                                               @if( $row->id >83)
                                                 <a href="{{ route('admin_app_language_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                                                @endif
                                             </td>
                                         </tr>
 

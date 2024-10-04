@@ -4,7 +4,7 @@
 <style>
 
 </style>
-    <h1 class="h3 mb-3 text-gray-800">Add Volunteer</h1>
+    <h1 class="h3 mb-3 text-gray-800">Add Event Category</h1>
 
     <form action="{{ route('admin_event_category_store') }}" method="post" enctype="multipart/form-data">
         @csrf

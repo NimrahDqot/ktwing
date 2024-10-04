@@ -1,7 +1,5 @@
 @extends('admin.app_admin')
 @section('admin_content')
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
     <h1 class="h3 mb-3 text-gray-800">Edit Volunteer</h1>
 
         <form action="{{ route('admin_volunteer_update',$volunteer->id) }}" method="post" enctype="multipart/form-data">
@@ -85,12 +83,14 @@
                             <div class="form-group">
                                 <label for="">Assign Villages</label>
 
-                                    <select name="village_id[]" data-placeholder="-Select Attendees-" multiple class="chosen-select">
-                                        <option value="" disabled>-Select Villages-</option>
-                                        @foreach($villages as $village)
-                                            <option value="{{ $village->id }}" {{in_array($village->id, explode(',', $volunteer->village_id)) ? 'selected' : ''}} >{{ $village->name }}</option>
-                                        @endforeach
-                                    </select>
+
+                            <select name="village_id[]" multiple class="form-control my-select2-class" style="width: 100%">
+                                <option value="" disabled>-Select Villages-</option>
+                                @foreach($villages as $village)
+                                <option value="{{ $village->id }}" {{in_array($village->id, explode(',', $volunteer->village_id)) ? 'selected' : ''}} >{{ $village->name }}</option>
+                            @endforeach
+                            </select>
+
 
                             </div>
                         </div>
@@ -103,23 +103,4 @@
 
 @endsection
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
-<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 
-<script>
-      $(document).ready(function() {
-        $(".chosen-select").chosen({
-            no_results_text: "Oops, nothing found!",
-            width: "100%"
-        });
-    });
-
-    var loadFile = function(event) {
-      var output = document.getElementById('output');
-      output.src = URL.createObjectURL(event.target.files[0]);
-      output.onload = function() {
-        URL.revokeObjectURL(output.src) // free memory
-      }
-    };
-</script>

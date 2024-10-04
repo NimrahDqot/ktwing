@@ -1,6 +1,10 @@
 
 @extends('admin.app_admin')
 @section('admin_content')
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+
     <h1 class="h3 mb-3 text-gray-800">View Event</h1>
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -11,7 +15,7 @@
                             <select name="status" class="form-control" id="statusFilter">
                                 <option selected disabled>--Event status--</option>
                                 <option value="1"  {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
-                                <option value="0"  {{ request('status') == '0' ? 'selected' : '' }}>InActive</option>
+                                <option value="0"  {{ request('status') == '0' ? 'selected' : '' }}>Pending</option>
                             </select>
                         </div>
                         <div class="me-sm-3 ml-2">
@@ -25,15 +29,8 @@
                         <div class="me-sm-3 ml-2">
                             <input type="text" class="form-control my-1 my-lg-0" name="name" value="{{ request('name') }}" id="nameFilter" placeholder="Event Name...">
                         </div>
+
                         <div class="me-sm-3 ml-2">
-                            <select name="per_page"  class="form-control" id="per_page">
-                                <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>all</option>
-                            </select>
-                        </div>
-                    <div class="me-sm-3 ml-2">
                             <select name="sort_by" class="form-control" id="statusFilter">
                                 <option value="id" {{ request('sort_by') == '' ? 'selected' : '' }}>--Please select Sort by--</option>
                                 <option value="id" {{ request('sort_by') == 'id' ? 'selected' : '' }}>Id</option>
@@ -95,7 +92,7 @@
                             </td>
                             <td>{{ Str::ucfirst($row->event_category_info->name) }}</td>
                             <td>
-                                <b>Name: {{ Str::ucfirst($row->name) }} </b><br>
+                                <b>Name: </b>{{ Str::ucfirst($row->name) }} <br>
                                 <b>Date: </b>{{ date('d M, Y', strtotime($row->event_date)) }}, {{ date('g:i A', strtotime($row->event_time)) }}
                                <br>
                                @if($row->event_status == 'Ongoing')
@@ -166,7 +163,7 @@
                 </table>
 
                 <div class="col-12">
-                    {{ $events->links() }}
+                    {{ $event->links() }}
                 </div>
 
                 <!-- Assign Volunteer Modal -->
@@ -181,7 +178,8 @@
                             </div>
                             <div class="modal-body">
                                 <form id="assignVolunteerForm">
-                                        <select name="volunteer_id[]" id="volunteerSelect" data-placeholder="-Select Volunteer-" multiple class="form-control my-select2-class" style="width: 100%">
+                                    <select name="volunteer_id[]" id="volunteerSelect" data-placeholder="-Select Volunteer-" multiple class="chosen-select" style="width:100%">
+                                        <option  disabled>-Select Volunteer-</option>
                                         @foreach($volunteers as $volunteer)
                                             <option value="{{ $volunteer->id }}">{{ $volunteer->name }}</option>
                                         @endforeach
@@ -208,11 +206,12 @@
                             </div>
 
                             <div class="modal-body">
-
-                                <button type="button" class="btn btn-info float-right mb-2" data-toggle="modal" data-target="#attendeeModal">+ Add Attendee</button>
+                                <button type="button" class="btn btn-info float-right mb-2" data-toggle="modal" data-target="#attendeeModal">
+                                    + Add Attendee
+                                </button>
                                 <form id="assignattendeeForm">
-                                <select name="attendee_id[]" id="attendeeSelect"   multiple class="form-control my-select2-class" style="width:100%">
-
+                                    <select name="attendee_id[]" id="attendeeSelect" data-placeholder="-Select attendee-" multiple class="chosen-select" style="width:100%">
+                                        <option  disabled>-Select attendee-</option>
                                         @foreach($attendees as $attendee)
                                             <option value="{{ $attendee->id }}">{{ $attendee->name }}</option>
                                         @endforeach
@@ -232,7 +231,7 @@
     </div>
     <!-- Modal -->
     <!--Add new attendees Modal -->
-    <div class="modal fade" id="attendeeModal" role="dialog" tabindex="-1" aria-labelledby="attendeeModalLabel" aria-hidden="true">
+    <div class="modal fade" id="attendeeModal" tabindex="-1" role="dialog" aria-labelledby="attendeeModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -268,9 +267,19 @@
 
 @endsection
 
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 
 <script type="text/javascript">
+
+    $(document).ready(function() {
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, nothing found!",
+            width: "100%"
+        });
+    });
+
     function changeStatus(id){
         $.ajax({
             type:"get",
@@ -283,16 +292,17 @@
             }
         })
     }
+
     function openModal(rowId, selectedVolunteers) {
         const modal = document.getElementById('assignVolunteerModal');
         modal.dataset.rowId = rowId;
 
         // Clear previous selections
-        $('#volunteerSelect').val([]).trigger('change'); // Use 'change' for Select2
+        $('#volunteerSelect').val([]).trigger('chosen:updated');
 
         // Set the selected volunteers for this row
         if (selectedVolunteers && selectedVolunteers.length > 0) {
-            $('#volunteerSelect').val(selectedVolunteers).trigger('change'); // Use 'change' for Select2
+            $('#volunteerSelect').val(selectedVolunteers).trigger('chosen:updated');
         }
 
         // Show the modal
@@ -300,34 +310,16 @@
         modalInstance.show();
     }
 
-    // function openModal(rowId, selectedVolunteers) {
-    //     const modal = document.getElementById('assignVolunteerModal');
-    //     modal.dataset.rowId = rowId;
-
-    //     // Clear previous selections
-    //     $('#volunteerSelect').val([]).trigger('chosen:updated');
-
-    //     // Set the selected volunteers for this row
-    //     if (selectedVolunteers && selectedVolunteers.length > 0) {
-    //         $('#volunteerSelect').val(selectedVolunteers).trigger('chosen:updated');
-    //     }
-
-    //     // Show the modal
-    //     const modalInstance = new bootstrap.Modal(modal);
-    //     modalInstance.show();
-    // }
-
-
     function openAttendeeModal(rowId, selectedAttendee) {
+        console.log(rowId, selectedAttendee);
         const modal = document.getElementById('assignattendeeModal');
         modal.dataset.rowId = rowId;
 
         // Clear previous selections
-        $('#attendeeSelect').val([]).trigger('change'); // Use 'change' for Select2
+        $('#attendeeSelect').val([]).trigger('chosen:updated');
 
-        // Set the selected volunteers for this row
         if (selectedAttendee && selectedAttendee.length > 0) {
-            $('#attendeeSelect').val(selectedAttendee).trigger('change'); // Use 'change' for Select2
+            $('#attendeeSelect').val(selectedAttendee).trigger('chosen:updated');
         }
 
         // Show the modal
@@ -379,8 +371,7 @@ function submitVolunteer() {
                 location.reload(); // Reload the page or handle dynamically
             },
             error: function(error) {
-
-                toastr.error(error,'Error occurred while assigning volunteers');
+                toastr.error('Error occurred while assigning volunteers');
             }
         });
 
@@ -412,7 +403,6 @@ function submitAttendee() {
                 location.reload();
             },
             error: function(error) {
-                console.log(error.errors.name);
                 toastr.error('Error occurred while assigning attendees');
             }
         });
@@ -448,33 +438,18 @@ function submitAttendee() {
             success: function(response) {
                 if (response.success) {
                     // Update the attendee select options here
-
-                    // Update the attendee select options here
                     $('#attendeeSelect').append(new Option(response.attendee.name, response.attendee.id));
-
                     // Clear the input fields
                     document.getElementById('attendeeForm').reset();
-
-                    // Close the modal using jQuery
-                    $('#attendeeModal .close').click();
-
-                    toastr.success('Attendee added successfully');
+                    // Close the modal
+                    $('#attendeeModal').modal('hide');
                     toastr.success('Attendee added successfully');
                 } else {
                     alert(response.message);
                 }
             },
             error: function(error) {
-                if (error.status === 422) {
-                    // Handle validation errors
-                    const errors = error.responseJSON.errors;
-                    for (const key in errors) {
-
-                        toastr.error(errors[key].join(", ")); // Example alert for errors
-                    }
-                } else {
-                    console.error('An unexpected error occurred.');
-                }
+                console.error('Error:', error);
                 toastr.error('Error occurred while adding attendee');
             }
         });

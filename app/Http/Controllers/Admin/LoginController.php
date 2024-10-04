@@ -37,7 +37,7 @@ class LoginController extends Controller
 
         if(Auth::guard('admin')->attempt($credential)) {
                // Store the user's role in the session
-            $roleId = Auth::guard('admin')->user()->usertype;
+            $roleId = Auth::guard('admin')->user()->role_id;
             session(['admin_role_id' => $roleId]);
             return redirect()->route('admin_dashboard');
         } else {

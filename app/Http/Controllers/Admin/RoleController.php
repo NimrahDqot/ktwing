@@ -18,7 +18,7 @@ class RoleController extends Controller
 
     public function index() {
         $roles = Role::orderBy('created_at', 'desc')->get();
-        $used_role_ids = Volunteer::distinct()->pluck('role_id')->merge(Admin::distinct()->pluck('usertype'));
+        $used_role_ids = Volunteer::distinct()->pluck('role_id')->merge(Admin::distinct()->pluck('role_id'));
 
         return view('admin.role.view', compact('roles', 'used_role_ids'));
     }

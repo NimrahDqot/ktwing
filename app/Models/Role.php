@@ -9,5 +9,8 @@ class Role extends Model
     protected $fillable = [
         'name',
     ];
-
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
 }

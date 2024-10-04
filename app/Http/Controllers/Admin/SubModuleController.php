@@ -17,9 +17,8 @@ class SubModuleController extends Controller
     }
 
     public function index() {
-        $manage_module = SubModule::orderBy('created_at','desc')->get();
-        $module = Module::orderBy('created_at','desc')->get();
-        return view('admin.sub_module.view', compact('manage_module','module'));
+        $manage_modules = SubModule::orderBy('created_at','desc')->select('id','name','key','route_name','module_id')->paginate(10);
+        return view('admin.sub_module.view', compact('manage_modules'));
     }
 
     public function create() {

@@ -15,7 +15,7 @@ class AppLanguageController extends Controller
     }
 
     public function index() {
-        $language_data = AppLanguage::orderBy('id', 'asc')->get();
+        $language_data = AppLanguage::orderBy('id', 'desc')->get();
         return view('admin.app_language.view', compact('language_data'));
     }
 
@@ -46,7 +46,7 @@ class AppLanguageController extends Controller
         $data['lang_key'] =   str_replace(" ", "_", $request->lang_key) ?? null;
         $app_language->fill($data)->save();
 
-        return redirect()->back();
+        // return redirect()->back();
         return redirect()->route('admin_app_language_view')->with('success', SUCCESS_ACTION);
     }
 

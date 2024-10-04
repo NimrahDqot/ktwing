@@ -1,6 +1,6 @@
 @extends('admin.app_admin')
 @section('admin_content')
-    <h1 class="h3 mb-3 text-gray-800">Add Banner</h1>
+    <h1 class="h3 mb-3 text-gray-800">Edit Banner</h1>
 
         <form action="{{ route('admin_banner_update',$banner->id) }}" method="post" enctype="multipart/form-data">
             @csrf
@@ -17,10 +17,7 @@
                     <label for="">{{ TITLE }} *</label>
                     <input type="text" name="title" class="form-control" value="{{ $banner->title }}">
                 </div>
-                <div class="form-group">
-                    <label for="">Url</label>
-                    <input type="url" name="url" class="form-control" value="{{ $banner->url }}">
-                </div>
+
                 <div class="form-group">
                     <label for="">Type *</label>
                     <input type="text" name="type" class="form-control" value="{{ $banner->type }}">

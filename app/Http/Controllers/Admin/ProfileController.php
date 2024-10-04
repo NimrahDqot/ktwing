@@ -28,7 +28,7 @@ class ProfileController extends Controller
         }
 
         $admin_data = Auth::user();
-        $obj = User::findOrFail($admin_data->id);
+        $obj = Admin::findOrFail($admin_data->id);
         $data = $request->only($obj->getFillable());
         $request->validate([
             'username' => 'required',
@@ -61,7 +61,7 @@ class ProfileController extends Controller
         }
 
         $admin_data = Auth::user();
-        $obj = User::findOrFail($admin_data->id);
+        $obj = Admin::findOrFail($admin_data->id);
         $data = $request->only($obj->getFillable());
         $request->validate([
             'password' => 'required',
@@ -89,7 +89,7 @@ class ProfileController extends Controller
         }
 
         $admin_data = Auth::user();
-        $obj = User::findOrFail($admin_data->id);
+        $obj = Admin::findOrFail($admin_data->id);
         $data = $request->only($obj->getFillable());
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'

@@ -15,4 +15,12 @@ class Village extends Model
         'status',
     ];
 
+    public function events()
+    {
+        return $this->hasMany(Event::class)->select('village_id'); // Assuming your event model uses a foreign key village_id
+    }
+
+    public function scopeActive($query){
+        return $query->where('status',1);
+    }
 }

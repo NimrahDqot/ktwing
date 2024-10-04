@@ -4,7 +4,7 @@
 <style>
 
 </style>
-    <h1 class="h3 mb-3 text-gray-800">Add Volunteer</h1>
+    <h1 class="h3 mb-3 text-gray-800">Add Village</h1>
 
     <form action="{{ route('admin_village_store') }}" method="post" enctype="multipart/form-data">
         @csrf

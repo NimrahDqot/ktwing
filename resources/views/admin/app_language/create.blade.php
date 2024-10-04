@@ -4,7 +4,7 @@
 <style>
 
 </style>
-    <h1 class="h3 mb-3 text-gray-800">Add Attendees</h1>
+    <h1 class="h3 mb-3 text-gray-800">Add App Language</h1>
 
     <form action="{{ route('admin_app_language_store') }}" method="post" enctype="multipart/form-data">
         @csrf

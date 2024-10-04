@@ -14,4 +14,7 @@ class EventCategory extends Model
         'status',
     ];
 
+    public function scopeActive($query){
+        return $query->where('status',1);
+    }
 }

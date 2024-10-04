@@ -22,19 +22,24 @@
                     </thead>
                     <tbody>
                         @php $i=0; @endphp
-                        @foreach($manage_module as $row)
+                        @foreach($manage_modules as $row)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $row->key }}</td>
                             <td>{{ $row->name }}</td>
                             <td>
-                                <a href="{{ route('admin_manage_module_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                <a href="{{ route('admin_manage_module_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                                @if ($row->id >= 17)
+                                    <a href="{{ route('admin_manage_module_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                                    <a href="{{ route('admin_manage_module_delete',$row->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('{{ ARE_YOU_SURE }}');"><i class="fas fa-trash-alt"></i></a>
+                               @endif
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
+                <div class="col-12">
+                    {{  $manage_modules->links()}}
+                </div>
             </div>
         </div>
     </div>

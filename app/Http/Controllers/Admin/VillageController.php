@@ -17,7 +17,8 @@ class VillageController extends Controller
     }
 
     public function index() {
-        $village = Village::orderBy('created_at')->get();
+        $village = Village::orderBy('created_at')->with('events')->paginate(10);
+
         return view('admin.village.view', compact('village'));
     }
 

@@ -1,6 +1,8 @@
 
 @extends('admin.app_admin')
 @section('admin_content')
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
 
 <h1 class="h3 mb-3 text-gray-800">Edit Event</h1>
 
@@ -54,17 +56,16 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Date</label>
-                            <input type="date" name="event_date" class="form-control"  value="{{ old('event_date',$event->event_date) }}" min="{{ date('Y-m-d') }}">
+                            <input type="date" name="event_date" class="form-control"  value="{{ old('event_date',$event->event_date) }}">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Event Time</label>
-                            <input type="time" name="event_time" class="form-control"  value="{{ old('event_time',$event->event_time) }}" min="{{ date('H:i A') }}">
+                            <input type="time" name="event_time" class="form-control"  value="{{ old('event_time',$event->event_time) }}">
                         </div>
                     </div>
-
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Event Duration</label>
@@ -93,6 +94,25 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
+                            <label for="">Important Attendees</label>
+
+                                <select name="attendees_id[]" data-placeholder="-Select Attendees-" multiple class="chosen-select">
+                                    <option value="" disabled>-Select Attendees-</option>
+                                    @foreach($attendees as $attendee)
+                                        <option value="{{ $attendee->id }}" {{in_array($attendee->id,explode(',', $event->attendees_id)) ? 'selected' : ''}} >{{ $attendee->name }}</option>
+                                    @endforeach
+                                </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                           <a class="btn btn-info mt-4" href="{{route('admin_attendees_create')}}">+ Add More Attendees</a>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
                             <label for="">Image</label>
                             <input type="file" accept="image/*" onchange="loadFile(event)"  name="image" class="form-control">
 
@@ -114,3 +134,35 @@
         </div>
     </form>
 @endsection
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
+
+<script>
+    $(document).ready(function() {
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, nothing found!",
+            width: "100%"
+        });
+    });
+
+    function displayAttendeeImages() {
+        const selectedValues = $('#attendeesSelect').val(); // Get selected values
+        const imagesContainer = $('#attendeeImages');
+        imagesContainer.empty(); // Clear previous images
+
+        // Check if any options are selected
+        if (selectedValues.length === 0) {
+            imagesContainer.append('<p>No attendees selected.</p>'); // Optional: message if no selections
+            return;
+        }
+
+        selectedValues.forEach(value => {
+            const option = $(`#attendeesSelect option[value="${value}"]`);
+            const imgSrc = option.data('image');
+            const imgElement = $('<img>').attr('src', imgSrc).addClass('w_200 m-1'); // Add styling as needed
+            imagesContainer.append(imgElement);
+        });
+    }
+</script>
+

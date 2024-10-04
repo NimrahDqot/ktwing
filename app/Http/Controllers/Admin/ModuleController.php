@@ -16,8 +16,8 @@ class ModuleController extends Controller
     }
 
     public function index() {
-        $manage_module = Module::orderBy('created_at','desc')->get();
-        return view('admin.module.view', compact('manage_module'));
+        $manage_modules = Module::orderBy('created_at','desc')->select('id', 'name', 'key', 'route_name')->paginate(10);
+        return view('admin.module.view', compact('manage_modules'));
     }
 
     public function create() {

@@ -15,7 +15,7 @@ class NotificationController extends Controller
     }
 
     public function index() {
-        $notification = Notification::orderBy('created_at','desc')->get();
+        $notification = Notification::paginate(10);
         return view('admin.notification.view', compact('notification'));
     }
 

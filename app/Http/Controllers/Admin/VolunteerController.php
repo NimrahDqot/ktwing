@@ -41,7 +41,7 @@ class VolunteerController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'phone' => 'required|max:10|unique:volunteers,phone',
+            'phone' => 'required|digits:10|unique:volunteers,phone',
             'experience' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image validation
             'password' => 'required|confirmed|min:8',
@@ -103,13 +103,16 @@ class VolunteerController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'phone' => 'required|max:10',
             'experience' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image validation
             'password' => 'nullable|confirmed|min:8',
             'role_id' => 'required',
             'village_id' => 'required',
-
+            'phone' => [
+                'required',
+                'digits:10',
+                Rule::unique('volunteers')->ignore($id),
+            ],
             'email' => [
                 'required',
                 'email',

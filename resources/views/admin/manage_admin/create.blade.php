@@ -22,13 +22,13 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Email</label>
-                            <input type="text" name="email" class="form-control" value="{{ old('email') }}">
+                            <input type="email" name="email" class="form-control" value="{{ old('email') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Mobile</label>
-                            <input type="text" name="mobile" class="form-control" value="{{ old('mobile') }}">
+                            <input type="text" pattern="\d{10}"  maxlength="10" name="mobile" oninput="this.value = this.value.replace(/[^0-9]/g, '');"  class="form-control" value="{{ old('mobile') }}" required>
                         </div>
                     </div>
                 </div>
@@ -47,13 +47,13 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Password *</label>
-                            <input type="password" name="password" class="form-control" value="{{ old('password') }}">
+                            <input type="text" name="password" class="form-control" value="{{ old('password') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Re-Enter Password *</label>
-                            <input type="password" name="confirm_password" class="form-control" value="{{ old('confirm_password') }}">
+                            <input type="text" name="confirm_password" class="form-control" value="{{ old('confirm_password') }}">
                         </div>
                     </div>
                     <div class="col-md-4">

@@ -56,7 +56,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\AppLanguageController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\VisitorController;
-
+use App\Http\Controllers\Admin\LevelRewardController;
 use App\Models\Notification;
 
 use Illuminate\Support\Facades\Route;
@@ -76,8 +76,8 @@ use Illuminate\Support\Facades\Route;
 
 // In web.php or api.php
 
-Route::post('/change-status', [VolunteerController::class, 'changeStatus']);
-Route::post('/submit-rejection-reason', [VolunteerController::class, 'submitRejectionReason']);
+Route::post('/change-volunteer-status', [VolunteerController::class, 'changeStatus'])->name('change-volunteer-status');
+Route::post('/submit-rejection-reason', [VolunteerController::class, 'submitRejectionReason'])->name('submit-rejection-reason');
 
 Route::get('admin/dashboard', [DashboardControllerForAdmin::class,'index'])
     ->name('admin_dashboard');
@@ -1039,7 +1039,7 @@ Route::post('admin/event/update/{id}', [EventController::class,'update'])
 
 Route::get('admin/event-status/{id}', [EventController::class,'change_status']);
 
-Route::post('admin/assign-volunteer', [EventController::class, 'assign_volunteer']);
+Route::post('admin/assign-volunteer', [EventController::class, 'assign_volunteer'])->name('assign_volunteer');
 Route::post('admin/assign-attendee', [EventController::class, 'assign_attendee']);
 
 Route::post('/admin/attendees', [EventController::class, 'storeAttendee'])->name('admin_attendees_store');
@@ -1107,3 +1107,29 @@ Route::get('admin/visitor-status/{id}', [VisitorController::class,'change_status
 Route::get('version', function() {
     return app()->version();
 });
+
+
+
+/* --------------------------------------- */
+/* Level Reward Admin */
+/* --------------------------------------- */
+Route::get('admin/level-reward/view', [LevelRewardController::class,'index'])
+->name('admin_level_reward_view');
+
+Route::get('admin/level-reward/create', [LevelRewardController::class,'create'])
+->name('admin_level_reward_create');
+
+Route::post('admin/level-reward/store', [LevelRewardController::class,'store'])
+->name('admin_level_reward_store');
+
+Route::get('admin/level-reward/delete/{id}', [LevelRewardController::class,'destroy'])
+->name('admin_level_reward_delete');
+
+Route::get('admin/level-reward/edit/{id}', [LevelRewardController::class,'edit'])
+->name('admin_level_reward_edit');
+
+Route::post('admin/level-reward/update', [LevelRewardController::class,'update'])
+    ->name('admin_level_reward_update');
+
+
+Route::get('admin/change-level-reward-status/{id}', [LevelRewardController::class,'change_status'])->name('change-level-reward-status');

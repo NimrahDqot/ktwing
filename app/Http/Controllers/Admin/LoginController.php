@@ -34,7 +34,6 @@ class LoginController extends Controller
             'email'=> $request->email,
             'password'=> $request->password
         ];
-
         if(Auth::guard('admin')->attempt($credential)) {
                // Store the user's role in the session
             $roleId = Auth::guard('admin')->user()->role_id;

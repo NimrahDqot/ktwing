@@ -142,7 +142,7 @@ $roleId = session('admin_role_id'); // Retrieve the role_id from the session
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600">{{ $user->name }}</span>
+                            <span class="mr-2 d-lg-inline text-gray-600">{{ $user->username }}</span>
                             <img class="img-profile rounded-circle" src="{{ asset($user->image) }}">
                         </a>
                         <!-- Dropdown - User Information -->

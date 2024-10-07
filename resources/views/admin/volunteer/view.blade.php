@@ -37,11 +37,19 @@
                                 </td>
                                 <td class="text-capitalize">
                                     {{ $row->name }} <br>
-                                    <b>{{ $row->referal_code }}</b></td>
+                                    <b>{{ $row->referal_code }}</b> <br>
+                                    @if($row->status == '0')
+                                    <span class="badge badge-pill badge-warning mt-2">Pending</span>
+                                @elseif($row->status == '1')
+                                    <span class="badge badge-pill badge-success mt-2">Active</span>
+                                @elseif($row->status == '2')
+                                    <span class="badge badge-pill badge-danger mt-2">Reject</span>
+                                @endif</td>
                                 <td>Experience: {{ $row->experience }} <br> {{ $row->email }} <br> {{ $row->phone }}
                                 </td>
                                 <td class="text-capitalize">
-                                    {{ $row->role_id ? $row->Role->name : '' }}</td>
+                                    {{ $row->role_id ? $row->Role->name : 'Not found' }}
+                                </td>
                                 <td class="text-capitalize">
                                     @if ($row->villages()->isNotEmpty())
                                         @foreach ($row->villages() as $village)
@@ -166,7 +174,7 @@
     <script>
         function changeStatus(id, status) {
             $.ajax({
-                url: '/change-status',
+                url: '{{route('change-volunteer-status')}}',
                 method: 'POST',
                 data: {
                     id: id,
@@ -200,7 +208,7 @@
             }
 
             $.ajax({
-                url: '/submit-rejection-reason', // Your route here
+                url: '{{ route('submit-rejection-reason') }}',
                 method: 'POST',
                 data: {
                     id: id,

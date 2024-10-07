@@ -22,7 +22,7 @@ class AttendeesController extends Controller
         })
         ->unique() // Get unique IDs
         ->toArray(); // Convert to an array
-    $attendees = Attendees::orderBy('created_at', 'desc')->get();
+    $attendees = Attendees::orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.attendees.view', compact('attendees','eventAttendeeIds'));
     }

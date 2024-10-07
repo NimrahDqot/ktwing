@@ -201,23 +201,20 @@ class EventController extends Controller
 
     public function assign_volunteer(Request $request) {
         // Validate incoming request
-        $validatedData = Validator::make($request->all(), [
+       $request->validate([
             'id' => 'required|exists:events,id', // Validate that the ID exists
             'volunteer_id' => 'required|array', // Ensure volunteer IDs are sent as an array
             'volunteer_id.*' => 'exists:volunteers,id', // Ensure each volunteer ID exists
         ]);
-        if ($validatedData) {
-            return response()->json(['error' => $validatedData->errors()->first()], 404);
-        }
+
         $id = $request->id;
         $volunteer_id = $request->volunteer_id;
 
-        // Find the event
-        $event = Event::find($id);
-
-        if (!$volunteer_id) {
+        if (!($volunteer_id || $id)) {
             return response()->json(['error' => 'Record not found.'], 404);
         }
+        // Find the event
+        $event = Event::findOrFail($id);
 
         // Save volunteer IDs as comma-separated values
         $event->volunteer_id = implode(',', $volunteer_id);

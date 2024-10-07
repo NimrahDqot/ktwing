@@ -37,11 +37,11 @@ class VillageController extends Controller
         $data = $request->only($village->getFillable());
 
         $request->validate([
-            'name'=> 'required',
+            'name'=> 'required|string',
             'district'=> 'required',
             'population'=> 'nullable',
             'language'=> 'nullable',
-            'contact'=> 'nullable'
+            'contact'=> 'nullable|digits:10'
         ]);
 
         $village->fill($data)->save();
@@ -68,7 +68,11 @@ class VillageController extends Controller
             'district'=> 'required',
             'population'=> 'nullable',
             'language'=> 'nullable',
-            'contact'=> 'nullable'
+            'contact' => [
+                'nullable',
+                'digits:10',
+                Rule::unique('villages')->ignore($id),
+            ],
         ]);
         $village->fill($data)->save();
         return redirect()->route('admin_village_view')->with('success', SUCCESS_ACTION);

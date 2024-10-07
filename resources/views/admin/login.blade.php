@@ -37,7 +37,7 @@
                                                 <input id="email" type="email" class="form-control form-control-user" name="email" autofocus placeholder="{{ EMAIL_ADDRESS }}" value="{{ (env('PROJECT_MODE') == 0) ? 'admin@gmail.com' : 'admin@gmail.com' }}">
                                             </div>
                                             <div class="form-group">
-                                                <input id="password" type="password" class="form-control form-control-user" name="password" placeholder="{{ PASSWORD }}" value="{{ (env('PROJECT_MODE') == 0) ? '12345678' : '12345678' }}">
+                                                <input id="password" type="password" class="form-control form-control-user" name="password" placeholder="{{ PASSWORD }}" value="">
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-user btn-block">{{ LOGIN }}</button>
                                         </form>

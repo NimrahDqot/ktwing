@@ -31,7 +31,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Name</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name') }}">
+                            <input type="text" maxlength="10" name="name" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '');"  class="form-control" value="{{ old('name') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -46,20 +46,20 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Mobile</label>
-                            <input type="number" name="phone" class="form-control" value="{{ old('phone') }}">
+                            <input type="text"   maxlength="10" name="phone" oninput="this.value = this.value.replace(/[^0-9]/g, '');"  class="form-control" value="{{ old('phone') }}">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Password *</label>
-                            <input type="password" name="password" class="form-control" value="{{ old('password') }}">
+                            <input type="text" name="password" class="form-control" value="{{ old('password') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Re-Enter Password *</label>
-                            <input type="password" name="password_confirmation" class="form-control" value="{{ old('confirm_password') }}">
+                            <input type="text" name="password_confirmation" class="form-control" value="{{ old('confirm_password') }}">
                         </div>
                     </div>
                 </div>

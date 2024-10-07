@@ -37,7 +37,8 @@ class ManageAdminController extends Controller
 
         $request->validate([
             'username' => 'required',
-            'mobile' => 'required|unique:admins,mobile',
+            'mobile' => 'required|digits:10|unique:admins,mobile',
+            'email' => 'required|unique:admins,email',
             'role_id' => 'required',
             'password' => 'required|same:confirm_password',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Optional image validation
@@ -78,7 +79,14 @@ class ManageAdminController extends Controller
             'password' => 'same:confirm_password',
             'mobile' => [
                 'required',
+                'digits:10',
                 Rule::unique('admins')->ignore($id),
+            ],
+           'email' => [
+                'nullable',
+                'email',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+                Rule::unique('admins')->ignore($id), // Use the correct table
             ],
             // 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Optional image validation
         ]);
@@ -148,7 +156,7 @@ class ManageAdminController extends Controller
                 $admin_status->is_admin = '1';
                 $message=SUCCESS_ACTION;
                 $admin_status->save();
-            }a
+            }
         }
         return response()->json($message);
     }

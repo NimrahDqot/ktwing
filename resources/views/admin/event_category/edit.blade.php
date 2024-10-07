@@ -17,7 +17,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="">Event Category Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name',$event_category->name) }}">
+                                <input type="text" maxlength="10" name="name" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '');"  class="form-control" value="{{ old('name',$event_category->name) }}">
                             </div>
                         </div>
                     </div>

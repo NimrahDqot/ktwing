@@ -343,7 +343,7 @@ function submitVolunteer() {
         console.log(selectedVolunteers);
     if (selectedVolunteers && selectedVolunteers.length > 0) {
         $.ajax({
-            url:"{{url('/admin/assign-volunteer')}}",
+            url:'{{route('assign_volunteer')}}',
             method: 'POST',
             data: {
                 id: rowId,

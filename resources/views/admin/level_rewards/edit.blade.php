@@ -1,14 +1,14 @@
 @extends('admin.app_admin')
 @section('admin_content')
-    <h1 class="h3 mb-3 text-gray-800">Edit Village</h1>
+    <h1 class="h3 mb-3 text-gray-800">Edit Level Reward</h1>
 
-        <form action="{{ route('admin_village_update',$village->id) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('admin_level_reward_update',$level_reward->id) }}" method="post" enctype="multipart/form-data">
         @csrf
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 mt-2 font-weight-bold text-primary"></h6>
                     <div class="float-right d-inline">
-                        <a href="{{ route('admin_village_view') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>
+                        <a href="{{ route('admin_level_reward_view') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>
                             {{ VIEW_ALL }}</a>
                     </div>
                 </div>
@@ -16,34 +16,46 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Village Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name',$village->name) }}">
+                                <label for="">Level Name</label>
+                                <input type="text" name="level_name" class="form-control" value="{{ old('level_name') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">District</label>
-                                <input type="text" name="district" class="form-control" value="{{ old('district',$village->district) }}">
+                                <label for="">Min Points</label>
+                                <input type="number" name="min_points" class="form-control" value="{{ old('min_points') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Population</label>
-                                <input type="text" name="population" class="form-control" value="{{ old('population',$village->population) }}">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="">language</label>
-                                <input type="text" name="language" class="form-control" value="{{ old('language',$village->language) }}">
+                                <label for="">Max Points</label>
+                                <input type="number" name="max_points" class="form-control" value="{{ old('max_points') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Contact</label>
-                                <input type="text" name="contact" class="form-control" value="{{ old('contact',$village->contact) }}">
+                                <label for="">Needed Users to Qualify Level</label>
+                                <input type="number" name="min_users_for_level" class="form-control"
+                                    value="{{ old('min_users_for_level') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Award Amount</label>
+                                <input type="number" name="awards_amount" class="form-control" value="{{ old('awards_amount') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Award Gift</label>
+                                <input type="text" name="awads_gifts" class="form-control" min="1" maxlength="255"  value="{{ old('awads_gifts') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Award Gift Image</label>
+                                <input type="file" name="awads_gifts_img" class="form-control"
+                                    value="{{ old('awads_gifts') }}">
                             </div>
                         </div>
 
@@ -64,4 +76,5 @@
         URL.revokeObjectURL(output.src) // free memory
       }
     };
+
 </script>

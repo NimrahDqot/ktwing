@@ -54,6 +54,9 @@
 
                     </tbody>
                 </table>
+                <div class="">
+                    {{$attendees->links()}}
+                </div>
                 <div id="modal" class="modal modal-image" onclick="closeModal()">
                     <span class="close close-image" onclick="closeModal()">&times;</span>
                     <img class="modal-image-content modal-content" id="modalImage">

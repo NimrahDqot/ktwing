@@ -21,7 +21,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Village Name</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name') }}">
+                            <input type="text" maxlength="10" name="name" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '');"  class="form-control" value="{{ old('name') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -47,7 +47,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Contact</label>
-                            <input type="text" name="contact" class="form-control" value="{{ old('contact') }}">
+                            <input type="text" maxlength="10" name="contact" oninput="this.value = this.value.replace(/[^0-9]/g, '');"  class="form-control" value="{{ old('contact') }}">
                         </div>
                     </div>
 

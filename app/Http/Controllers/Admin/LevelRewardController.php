@@ -15,7 +15,7 @@ class LevelRewardController extends Controller
     }
 
     public function index() {
-        $level_rewards = LevelReward::orderBy('created_at','desc')->get();
+        $level_rewards = LevelReward::paginate(10);
         return view('admin.level_rewards.view', compact('level_rewards'));
     }
     public function create() {
@@ -36,19 +36,21 @@ class LevelRewardController extends Controller
             'max_points'=> 'required',
             'awards_amount'=> 'required',
             'awads_gifts'=> 'required',
-            'awads_gifts_img'=> 'required',
-            'status'=> 'required',
-            'user_count' => 'numeric'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Optional image validation
+            // 'status'=> 'required',
+            'min_users_for_level' => 'numeric'
         ]);
+        if($request->hasFile('image')){
+            $rand_value = md5(mt_rand(11111111,99999999));
+            $ext = $request->file('image')->extension();
+            $final_name = $rand_value.'.'.$ext;
+            $request->file('image')->move(public_path('uploads/level_rewards/'), $final_name);
+            unset($data['image']);
+            $data['image'] = $final_name;
+        }
 
-        $rand_value = md5(mt_rand(11111111,99999999));
-        $ext = $request->file('image')->extension();
-        $final_name = $rand_value.'.'.$ext;
-        $request->file('image')->move(public_path('uploads/level_rewards/'), $final_name);
-        unset($data['image']);
-        $data['image'] = $final_name;
         $level_reward->fill($data)->save();
-        return redirect()->route('admin_banner_view')->with('success', SUCCESS_ACTION);
+        return redirect()->route('admin_level_reward_view')->with('success', SUCCESS_ACTION);
     }
 
     public function edit($id) {
@@ -71,22 +73,22 @@ class LevelRewardController extends Controller
             'max_points'=> 'required',
             'awards_amount'=> 'required',
             'awads_gifts'=> 'required',
-            'awads_gifts_img'=> 'required',
+            'image'=> 'required',
             'status'=> 'required',
-            'user_count' => 'numeric'
+            'min_users_for_level' => 'numeric'
         ]);
         if($request->image){
-            @unlink(public_path('uploads/banner/'.$request->image));
+            @unlink(public_path('uploads/level_rewards/'.$request->image));
             $ext = $request->file('image')->extension();
             $rand_value = md5(mt_rand(11111111,99999999));
             $final_name = $rand_value.'.'.$ext;
-            $request->file('image')->move(public_path('uploads/banner/'), $final_name);
+            $request->file('image')->move(public_path('uploads/level_rewards/'), $final_name);
 
             unset($data['image']);
             $data['image'] = $final_name;
         }
         $banner->fill($data)->save();
-        return redirect()->route('admin_banner_view')->with('success', SUCCESS_ACTION);
+        return redirect()->route('admin_level_reward_view')->with('success', SUCCESS_ACTION);
     }
 
     public function destroy($id) {

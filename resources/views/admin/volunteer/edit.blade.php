@@ -44,7 +44,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="">Mobile</label>
-                                <input type="text" name="phone" class="form-control" value="{{ old('phone', $volunteer->phone) }}">
+                                <input type="number" name="phone" class="form-control" value="{{ old('phone', $volunteer->phone) }}">
                             </div>
                         </div>
                         <div class="col-md-4">

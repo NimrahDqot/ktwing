@@ -134,5 +134,8 @@ class Event extends Model
         return [];
     }
 
-
+    public function getAttendeesArray()
+    {
+        return explode(',', $this->attendees_id);
+    }
 }

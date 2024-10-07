@@ -13,28 +13,43 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <label for="">{{ TITLE }} *</label>
-                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" autofocus>
-                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">{{ TITLE }} *</label>
+                            <input type="text" name="title" class="form-control" value="{{ old('title') }}" autofocus>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Type *</label>
+                            <input type="text" name="type" class="form-control" value="{{ old('type') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Sort *</label>
+                            <input type="number" name="sort_by" class="form-control" value="{{ old('sort_by') }}">
 
-                <div class="form-group">
-                    <label for="">Type *</label>
-                    <input type="text" name="type" class="form-control" value="{{ old('type') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="">Sort *</label>
-                    <input type="number" name="sort_by" class="form-control" value="{{ old('sort_by') }}">
-
-                </div>
-
-                <div class="form-group">
-                    <label for="">Image *</label>
-                    <div>
-                        <input type="file" name="image">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Image</label>
+                            <input type="file" accept="image/*" onchange="loadFile(event)" name="image"
+                                class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <img id="output" class="w_150" style="cursor: pointer;" onclick="zoomImage(this)" />
+                    </div>
+                    <div id="modal" class="modal modal-image" onclick="closeModal()">
+                        <span class="close close-image" onclick="closeModal()">&times;</span>
+                        <img class="modal-image-content modal-content" id="modalImage">
+                        <div id="caption"></div>
                     </div>
                 </div>
+
                 <button type="submit" class="btn btn-success">{{ SUBMIT }}</button>
             </div>
         </div>

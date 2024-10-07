@@ -40,7 +40,8 @@
                             </td>
                             <td>{{ isset($row->Role->name) ? $row->Role->name : '' }}</td>
                             <td>
-                                <input type="checkbox"
+                              <a href="" onclick="changeActivationStatus({{ $row->id }})">
+                                 <input type="checkbox"
                                        class="{{ $row->id == Auth::user()->id ? 'disabled' : '' }}"
                                        data-toggle="toggle"
                                        data-on="Active"
@@ -49,8 +50,10 @@
                                        data-offstyle="danger"
                                        {{ $row->activation_status == '1' ? 'checked' : '' }}
                                        {{ $row->id == Auth::user()->id ? 'disabled' : '' }}>
+                                    </a>
                             </td>
                             <td>
+                              <a href="" onclick="changeIsAdminStatus({{ $row->id }})">
                                 <input type="checkbox"
                                        class="{{ $row->id == Auth::user()->id ? 'disabled' : '' }}"
                                        data-toggle="toggle"
@@ -60,7 +63,8 @@
                                        data-offstyle="danger"
                                        {{ $row->is_admin == '1' ? 'checked' : '' }}
                                        {{ $row->id == Auth::user()->id ? 'disabled' : '' }}>
-                            </td>
+                                    </a>
+                                </td>
                             <td>
                                 <a href="{{ route('admin_manage_admin_edit',$row->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                 <a href="{{ route('admin_manage_admin_delete', $row->id) }}" class="btn btn-danger btn-sm {{ $row->id == Auth::user()->id ? 'disabled' : '' }}"

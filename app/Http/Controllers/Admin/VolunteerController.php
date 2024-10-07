@@ -20,7 +20,7 @@ class VolunteerController extends Controller
     }
 
     public function index() {
-        $volunteer = Volunteer::orderBy('created_at')->paginate(10);
+        $volunteer = Volunteer::orderBy('created_at','desc')->paginate(10);
         return view('admin.volunteer.view', compact('volunteer'));
     }
 
@@ -41,7 +41,7 @@ class VolunteerController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'phone' => 'required|max:10',
+            'phone' => 'required|max:10|unique:volunteers,phone',
             'experience' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image validation
             'password' => 'required|confirmed|min:8',
@@ -51,7 +51,7 @@ class VolunteerController extends Controller
             'required',
             'email',
             'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
-            "unique:users,email",
+            "unique:volunteers,email",
             ],
 
         ]);
@@ -68,6 +68,20 @@ class VolunteerController extends Controller
         }
         $data['village_id'] = implode(',', $request->village_id);
         $volunteer->fill($data)->save();
+        if($volunteer){
+
+            // Generate the referral code after saving the volunteer
+            $email = isset($request->email) ? strtoupper(substr($request->email, 0, 4)) : 'KTUSER';
+            $timestamp = now()->format('Hi') . now()->format('s'); // Get the last 4 digits (HHMM + SS)
+            $timestamp = substr($timestamp, -4); // Ensure you have only the last 4 digits
+            // Combine to form the referral code
+            $data['referal_code'] = $email . $volunteer->id . $timestamp;
+
+            // Update the volunteer with the referral code
+            $volunteer->referal_code = $data['referal_code'];
+            $volunteer->save();
+        }
+
         return redirect()->route('admin_volunteer_view')->with('success', SUCCESS_ACTION);
     }
 
@@ -100,7 +114,7 @@ class VolunteerController extends Controller
                 'required',
                 'email',
                 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
-                Rule::unique('users')->ignore($volunteer->id), // Ignore the current record's email
+                Rule::unique('volunteers')->ignore($volunteer->id), // Ignore the current record's email
             ],
         ]);
         if($request->hasFile('image')){

@@ -31,13 +31,13 @@
                         @foreach ($volunteer as $row)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    <a href="{{ asset($row->image) }}" target="_blank">
-                                        <img src="{{ asset($row->image) }}" alt="{{ $row->name }}" class="w_50">
-                                    </a>
+                                <td >
+                                    <img src="{{ asset($row->image) }}" onclick="zoomImage(this)" class="w_50">
+
                                 </td>
                                 <td class="text-capitalize">
-                                    {{ $row->name }}</td>
+                                    {{ $row->name }} <br>
+                                    <b>{{ $row->referal_code }}</b></td>
                                 <td>Experience: {{ $row->experience }} <br> {{ $row->email }} <br> {{ $row->phone }}
                                 </td>
                                 <td class="text-capitalize">
@@ -111,6 +111,11 @@
 
                     </tbody>
                 </table>
+                <div id="modal" class="modal modal-image" onclick="closeModal()">
+                    <span class="close close-image" onclick="closeModal()">&times;</span>
+                    <img class="modal-image-content modal-content" id="modalImage">
+                    <div id="caption"></div>
+                </div>
                 <div class="col-12">
                     {{ $volunteer->links() }}
                 </div>

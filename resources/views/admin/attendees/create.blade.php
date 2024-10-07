@@ -6,7 +6,7 @@
 </style>
     <h1 class="h3 mb-3 text-gray-800">Add Attendees</h1>
 
-    <form action="{{ route('admin_attendees_store') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ route('admin_attendees_store_data') }}" method="post" enctype="multipart/form-data">
         @csrf
         <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -36,8 +36,14 @@
                             <input type="file" accept="image/*" onchange="loadFile(event)"  name="image" class="form-control">
                         </div>
                     </div>
+
                     <div class="offset-md-8 col-md-4">
-                        <img id="output" class="w_300"/>
+                        <img id="output" class="w_150" style="cursor: pointer;" onclick="zoomImage(this)" />
+                    </div>
+                    <div id="modal" class="modal modal-image" onclick="closeModal()">
+                        <span class="close close-image" onclick="closeModal()">&times;</span>
+                        <img class="modal-image-content modal-content" id="modalImage">
+                        <div id="caption"></div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success">{{ SUBMIT }}</button>

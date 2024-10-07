@@ -30,12 +30,16 @@
                             <div class="form-group">
                                 <label for="">Image</label>
                                 <input type="file" accept="image/*" onchange="loadFile(event)"  name="image" class="form-control">
+
                             </div>
                         </div>
                         <div class="offset-md-8 col-md-4">
-                            <a href="{{ asset($attendees->image )}}" target="_blank">
-                                <img src="{{ asset($attendees->image )}}" alt="{{ $attendees->name }}" class="w_100"  id="output">
-                            </a>
+                            <img id="output" class="w_150" style="cursor: pointer;" onclick="zoomImage(this)" src="{{ asset($attendees->image )}}" />
+                        </div>
+                        <div id="modal" class="modal modal-image" onclick="closeModal()">
+                            <span class="close close-image" onclick="closeModal()">&times;</span>
+                            <img class="modal-image-content modal-content" id="modalImage">
+                            <div id="caption"></div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-success">{{ SUBMIT }}</button>

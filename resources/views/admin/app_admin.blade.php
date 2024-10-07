@@ -57,11 +57,11 @@ $roleId = session('admin_role_id'); // Retrieve the role_id from the session
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin_dashboard') }}">
             <div class="sidebar-brand-text mx-3 ttn">
-                <div class="left">
+                {{-- <div class="left">
                     @if(isset($g_setting->favicon))
                     <img src="{{ asset('uploads/site_photos/'.$g_setting->favicon) }}" alt="">
                     @endif
-                </div>
+                </div> --}}
                 <div class="right">
                     {{ env('APP_NAME') }}
                 </div>

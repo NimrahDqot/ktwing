@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VolunteerController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,15 +20,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::group(['prefix' => 'volunteer'], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('profile', [AuthController::class, 'profile']);
-    Route::get('app-string', [AuthController::class, 'app_string']);
-    Route::get('banner', [AuthController::class, 'banner']);
-    Route::post('notification', [AuthController::class, 'notification']);
-    Route::post('visitor-form', [AuthController::class, 'store_visitor']);
-    Route::post('all-event', [AuthController::class, 'all_events']);
-    Route::post('event-detail', [AuthController::class, 'event_detail']);
-    Route::post('create-event-request', [AuthController::class, 'create_event_request']);
-    Route::post('event-medias', [AuthController::class, 'event_medias']);
+    Route::post('login', [VolunteerController::class, 'login']);
+    Route::post('profile', [VolunteerController::class, 'profile']);
+    Route::get('app-string', [VolunteerController::class, 'app_string']);
+    Route::get('banner', [VolunteerController::class, 'banner']);
+    Route::post('notification', [VolunteerController::class, 'notification']);
+    Route::post('visitor-form', [VolunteerController::class, 'store_visitor']);
+    Route::post('all-event', [VolunteerController::class, 'all_events']);
+    Route::post('event-detail', [VolunteerController::class, 'event_detail']);
+    Route::post('create-event-request', [VolunteerController::class, 'create_event_request']);
+    Route::post('event-medias', [VolunteerController::class, 'event_medias']);
+    Route::post('refer-user-list', [VolunteerController::class, 'refer_list']);
 });
 
+Route::group(['prefix' => 'user'], function () {
+    Route::post('login', [UserController::class, 'login']);
+    Route::post('profile', [UserController::class, 'profile']);
+    Route::post('update-profile', [UserController::class, 'update_profile']);
+
+});

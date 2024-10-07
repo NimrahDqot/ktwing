@@ -46,7 +46,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Mobile</label>
-                            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}">
+                            <input type="number" name="phone" class="form-control" value="{{ old('phone') }}">
                         </div>
                     </div>
 
@@ -88,7 +88,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Assign Villages</label>
-                            <select name="village_id[]" multiple class="form-control select2" style="width: 100%">
+                            <select name="village_id[]" multiple class="form-control my-select2-class" style="width: 100%">
                                 <option value="" disabled>-Select Villages-</option>
                                 @foreach($villages as $village)
                                     <option value="{{ $village->id }}">{{ $village->name }}</option>

@@ -998,7 +998,7 @@ Route::get('admin/attendees/create', [AttendeesController::class,'create'])
 ->name('admin_attendees_create');
 
 Route::post('admin/attendees/store', [AttendeesController::class,'store'])
-->name('admin_attendees_store');
+->name('admin_attendees_store_data');
 
 Route::get('admin/attendees/delete/{id}', [AttendeesController::class,'destroy'])
 ->name('admin_attendees_delete');

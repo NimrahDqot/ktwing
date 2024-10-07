@@ -15,8 +15,16 @@ class AttendeesController extends Controller
     }
 
     public function index() {
-        $attendees = Attendees::orderBy('created_at','desc')->get();
-        return view('admin.attendees.view', compact('attendees'));
+        $eventAttendeeIds = DB::table('events')
+        ->pluck('attendees_id')
+        ->flatMap(function ($ids) {
+            return explode(',', $ids); // Split the comma-separated values into an array
+        })
+        ->unique() // Get unique IDs
+        ->toArray(); // Convert to an array
+    $attendees = Attendees::orderBy('created_at', 'desc')->get();
+
+        return view('admin.attendees.view', compact('attendees','eventAttendeeIds'));
     }
 
     public function create() {
